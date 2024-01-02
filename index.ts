@@ -1,18 +1,48 @@
-import express, { Express, Request, Response, Application } from "express";
+import express, {
+  Express,
+  Request,
+  Response,
+  Application,
+  NextFunction,
+} from "express";
 import dotenv from "dotenv";
 import router from "./routes";
+import getConnection from "./src/database/db.connect";
+import errorHandler from "./src/custom/ErrorHandler";
+import { MongooseError } from "mongoose";
 
 //For env File
 dotenv.config();
-
-const app: Application = express();
 const port = process.env.PORT || 8080;
 
+const app: Application = express();
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+//config view engine
+app.set("views", "./src/views");
+app.set("view engine", "ejs");
+
+//config public assets
+app.use(express.static("./public"));
+
+// config routes
 app.use("/api/v1", router);
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to Express & TypeScript Server");
+  res.render("hello.ejs");
 });
 
-app.listen(port, () => {
-  console.log(`Server is Fire at http://localhost:${port}`);
-});
+// handle global error
+app.use(errorHandler);
+
+(async () => {
+  try {
+    await getConnection();
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  } catch (error) {
+    console.log("check error: ", error);
+  }
+})();
