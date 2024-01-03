@@ -15,5 +15,7 @@ export class CreateUserDto {
 
   dob: string;
 
-  status: boolean;
+  status: number;
+
+  role: number;
 }

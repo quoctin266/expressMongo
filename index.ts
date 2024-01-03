@@ -1,15 +1,10 @@
-import express, {
-  Express,
-  Request,
-  Response,
-  Application,
-  NextFunction,
-} from "express";
+import express, { Express, Request, Response, Application } from "express";
 import dotenv from "dotenv";
 import router from "./routes";
 import getConnection from "./src/database/db.connect";
 import errorHandler from "./src/custom/ErrorHandler";
-import { MongooseError } from "mongoose";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 //For env File
 dotenv.config();
@@ -19,6 +14,16 @@ const app: Application = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// config cors
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 
 //config view engine
 app.set("views", "./src/views");

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "./AppError";
 import { MongooseError } from "mongoose";
+import ValidateError from "./ValidationError";
 
 const errorHandler = (
   error: Error,
@@ -20,8 +21,14 @@ const errorHandler = (
       error: error.message,
       data: null,
     });
+  } else if (error instanceof ValidateError) {
+    return res.status(400).json({
+      status: 400,
+      message: error.message,
+      error: error.errors,
+    });
   } else {
-    console.log(error);
+    console.log(error.message);
     return res.status(500).json({
       status: 500,
       error: "Internal Server Error",
