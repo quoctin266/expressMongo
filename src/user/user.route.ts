@@ -5,9 +5,9 @@ import { checkUserJWT } from "../middleware/jwt.service";
 
 const router = express.Router();
 
-router.get("/", checkUserJWT, (req, res) => {
+router.get("/", (req, res) => {
   res.send("users list");
 });
-router.post("/", checkUserJWT, errorCatching(UserController.create));
+router.post("/", errorCatching(UserController.create));
 
 export default router;

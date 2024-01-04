@@ -3,7 +3,7 @@ export interface errorObj {
   field: string;
 }
 
-class ValidateError extends Error {
+class ErrorValidation extends Error {
   statusCode: number;
   errors: errorObj[];
 
@@ -14,4 +14,4 @@ class ValidateError extends Error {
   }
 }
 
-export default ValidateError;
+export default ErrorValidation;

@@ -3,7 +3,6 @@ import errorCatching from "../custom/ErrorCatching";
 import AuthController from "./auth.controller";
 import { checkSchema } from "express-validator";
 import { validateError } from "../middleware/error.validate";
-import { checkUserJWT } from "../middleware/jwt.service";
 
 const router = express.Router();
 
@@ -46,6 +45,6 @@ router.post(
   errorCatching(AuthController.login)
 );
 
-router.post("/logout", checkUserJWT, errorCatching(AuthController.logout));
+router.post("/logout", errorCatching(AuthController.logout));
 
 export default router;

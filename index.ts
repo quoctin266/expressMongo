@@ -5,6 +5,7 @@ import getConnection from "./src/database/db.connect";
 import errorHandler from "./src/custom/ErrorHandler";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 
 //For env File
 dotenv.config();
@@ -24,6 +25,9 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+
+// config file option
+app.use(fileUpload({ createParentPath: true }));
 
 //config view engine
 app.set("views", "./src/views");

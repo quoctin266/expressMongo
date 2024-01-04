@@ -4,6 +4,8 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../custom/AppError";
 require("dotenv").config();
 
+const nonSecurePaths = ["/auth/login", "/auth/register"];
+
 const extractToken = (req: Request) => {
   if (
     req.headers.authorization &&
@@ -47,7 +49,8 @@ export const checkUserJWT = (
   res: Response,
   next: NextFunction
 ) => {
-  // if (nonSecurePaths.includes(req.path)) return next();
+  if (nonSecurePaths.includes(req.path)) return next();
+  if ((req as any).public) return next();
   const accessToken = extractToken(req);
 
   if (accessToken) {
