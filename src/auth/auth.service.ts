@@ -7,6 +7,7 @@ import UserService from "../user/user.service";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";
 import ms from "ms";
+import { GoogleAuthDto } from "./dto/google-auth.dto";
 require("dotenv").config();
 
 export default class AuthService {
@@ -57,6 +58,57 @@ export default class AuthService {
     const payload = await this.validateUser(email, password);
 
     if (!payload) throw new AppError("Invalid email or password", 401);
+
+    const accessToken = createJWT(
+      payload,
+      process.env.JWT_ACCESS_TOKEN as string,
+      process.env.JWT_ACCESS_EXPIRE as string
+    );
+
+    // update new refresh token for user
+    const refreshToken = createJWT(
+      payload,
+      process.env.JWT_REFRESH_TOKEN as string,
+      process.env.JWT_REFRESH_EXPIRE as string
+    );
+    if (refreshToken) await UserService.updateToken(refreshToken, payload.id);
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
+    });
+
+    return {
+      status: 200,
+      message: "Login successfully",
+      data: {
+        accessToken,
+        refreshToken,
+        userCredentials: payload,
+      },
+    };
+  };
+
+  static googleAuth = async (googleAuthDto: GoogleAuthDto, res: Response) => {
+    const { email, username, firstName, lastName } = googleAuthDto;
+
+    let user = await User.findOne({ email }).exec();
+
+    let payload: IUser = { id: "", username: "", email: "", role: 1 };
+    if (!user) {
+      let result = await User.create({ ...googleAuthDto });
+      payload.id = result.id;
+      payload.email = email;
+      payload.username = username;
+      payload.firstName = firstName;
+      payload.lastName = lastName;
+    } else {
+      payload.id = user.id;
+      payload.email = user.email as string;
+      payload.username = user.username as string;
+      payload.firstName = user.firstname as string;
+      payload.lastName = user.lastname as string;
+    }
 
     const accessToken = createJWT(
       payload,

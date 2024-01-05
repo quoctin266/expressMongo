@@ -45,6 +45,8 @@ router.post(
   errorCatching(AuthController.login)
 );
 
+router.post("/google-login", errorCatching(AuthController.googleAuth));
+
 router.post("/logout", errorCatching(AuthController.logout));
 
 export default router;

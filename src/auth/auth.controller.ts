@@ -3,6 +3,7 @@ import { RegisterUserDto } from "./dto/register-user.dto";
 import AuthService from "./auth.service";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { IUser } from "../user/user.interface";
+import { GoogleAuthDto } from "./dto/google-auth.dto";
 
 export default class AuthController {
   static async register(req: Request, res: Response) {
@@ -13,6 +14,12 @@ export default class AuthController {
 
   static async login(req: Request, res: Response) {
     let result = await AuthService.loginUser(req.body as LoginUserDto, res);
+
+    res.status(result.status).json(result);
+  }
+
+  static async googleAuth(req: Request, res: Response) {
+    let result = await AuthService.googleAuth(req.body as GoogleAuthDto, res);
 
     res.status(result.status).json(result);
   }

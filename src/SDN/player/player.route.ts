@@ -3,6 +3,7 @@ import errorCatching from "../../custom/ErrorCatching";
 import PlayerController from "./player.controller";
 import { validateError } from "../../middleware/error.validate";
 import { checkSchema } from "express-validator";
+import { isNumber } from "class-validator";
 
 const router = express.Router();
 
@@ -22,6 +23,15 @@ const validateCreatePlayer = {
   img: {
     notEmpty: true,
     errorMessage: "Player's image must not be empty",
+  },
+  goals: {
+    notEmpty: {
+      errorMessage: "Player's goals must not be empty",
+    },
+  },
+  nation: {
+    notEmpty: true,
+    errorMessage: "Player's nation must not be empty",
   },
 };
 

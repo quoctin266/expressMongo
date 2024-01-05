@@ -7,7 +7,7 @@ require("dotenv").config();
 
 export default class PlayerService {
   static getPlayersList = async () => {
-    let result = await Player.find().exec();
+    let result = await Player.find().populate("nation").exec();
 
     return {
       status: 200,

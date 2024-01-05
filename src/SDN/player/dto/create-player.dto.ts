@@ -3,4 +3,6 @@ export interface CreatePlayerDTO {
   club: string;
   info: string;
   img: string;
+  goals: number;
+  nation: string;
 }
