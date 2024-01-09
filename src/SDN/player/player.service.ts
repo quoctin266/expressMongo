@@ -9,10 +9,24 @@ export default class PlayerService {
   static getPlayersList = async () => {
     let result = await Player.find().populate("nation").exec();
 
+    let playerList = result.map((player) => {
+      const domainName = process.env.DOMAIN as string;
+      const port = process.env.PORT || "";
+      const imageUrl =
+        domainName + port + FileService.createImageLink(player.img as string);
+
+      const { img, ...rest } = player.toObject();
+
+      return {
+        ...rest,
+        imageUrl,
+      };
+    });
+
     return {
       status: 200,
       message: "Get players list successfully",
-      data: result,
+      data: playerList,
     };
   };
 

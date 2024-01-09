@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../custom/AppError";
 require("dotenv").config();
 
-const nonSecurePaths = ["/auth/login", "/auth/register", "/players"];
+const nonSecurePaths = ["/auth/login", "/auth/register", "/auth/google-login"];
 
 const extractToken = (req: Request) => {
   if (
