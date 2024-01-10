@@ -10,4 +10,5 @@ export interface IUser {
   phone?: string;
   address?: string;
   role: number;
+  status: number;
 }

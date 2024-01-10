@@ -5,9 +5,9 @@ export class CreateUserDto {
 
   email: string;
 
-  firstname: string;
+  firstName: string;
 
-  lastname: string;
+  lastName: string;
 
   address: string;
 

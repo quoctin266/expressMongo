@@ -39,7 +39,7 @@ export default class PlayerService {
     let result = await Player.create({ ...createPlayerDto });
 
     return {
-      status: 200,
+      status: 201,
       message: "Create new player successfully",
       data: result,
     };

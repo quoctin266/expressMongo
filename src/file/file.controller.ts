@@ -19,7 +19,7 @@ export default class FileController {
   }
 
   static async delete(req: Request, res: Response) {
-    let result = await FileService.removeFile(req.body.fileName);
+    let result = await FileService.removeFile(req.headers.filename as string);
 
     // res.status(result.status).json(result);
     res.status(result.status).json(result);

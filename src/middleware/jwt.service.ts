@@ -4,7 +4,13 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../custom/AppError";
 require("dotenv").config();
 
-const nonSecurePaths = ["/auth/login", "/auth/register", "/auth/google-login"];
+const nonSecurePaths = [
+  { path: "/auth/login", method: "POST" },
+  { path: "/auth/register", method: "POST" },
+  { path: "/auth/google-login", method: "POST" },
+  { path: "/auth/refresh", method: "GET" },
+  { path: "/categories", method: "GET" },
+];
 
 const extractToken = (req: Request) => {
   if (
@@ -49,7 +55,10 @@ export const checkUserJWT = (
   res: Response,
   next: NextFunction
 ) => {
-  if (nonSecurePaths.includes(req.path)) return next();
+  let allow = nonSecurePaths.some((item) => {
+    return req.path.startsWith(item.path) && item.method === req.method;
+  });
+  if (allow) return next();
   if ((req as any).public) return next();
   const accessToken = extractToken(req);
 

@@ -30,4 +30,37 @@ export default class AuthController {
 
     res.status(result.status).json(result);
   }
+
+  static async getNewToken(req: Request, res: Response) {
+    let refreshToken: string = req.cookies["refresh_token"];
+    let result = await AuthService.processNewToken(refreshToken, res);
+
+    res.status(result.status).json(result);
+  }
+
+  static async verifyPW(req: Request, res: Response) {
+    const {
+      userId,
+      currentPassword,
+    }: { userId: string; currentPassword: string } = req.body;
+    let result = await AuthService.verifyPassword(userId, currentPassword);
+
+    res.status(result.status).json(result);
+  }
+
+  static async changePW(req: Request, res: Response) {
+    const {
+      userId,
+      newPassword,
+      confirmNewPassword,
+    }: { userId: string; newPassword: string; confirmNewPassword: string } =
+      req.body;
+    let result = await AuthService.changePassword(
+      userId,
+      newPassword,
+      confirmNewPassword
+    );
+
+    res.status(result.status).json(result);
+  }
 }

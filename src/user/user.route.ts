@@ -1,13 +1,15 @@
 import express from "express";
 import UserController from "./user.controller";
 import errorCatching from "../custom/ErrorCatching";
-import { checkUserJWT } from "../middleware/jwt.service";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("users list");
-});
+router.get("/", errorCatching(UserController.getUsersList));
+
 router.post("/", errorCatching(UserController.create));
+
+router.get("/:id", errorCatching(UserController.getDetail));
+
+router.patch("/:id", errorCatching(UserController.update));
 
 export default router;

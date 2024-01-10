@@ -49,4 +49,10 @@ router.post("/google-login", errorCatching(AuthController.googleAuth));
 
 router.post("/logout", errorCatching(AuthController.logout));
 
+router.get("/refresh", errorCatching(AuthController.getNewToken));
+
+router.post("/verify-password", errorCatching(AuthController.verifyPW));
+
+router.post("/reset-password", errorCatching(AuthController.changePW));
+
 export default router;

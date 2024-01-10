@@ -1,6 +1,6 @@
 import { Response } from "express";
 import AppError from "../custom/AppError";
-import { createJWT } from "../middleware/jwt.service";
+import { createJWT, verifyJWT } from "../middleware/jwt.service";
 import User from "../user/schema/user.schema";
 import { IUser } from "../user/user.interface";
 import UserService from "../user/user.service";
@@ -39,10 +39,11 @@ export default class AuthService {
         const result: IUser = {
           id: user.id,
           username: user.username as string,
-          firstName: user.firstname as string,
-          lastName: user.lastname as string,
+          firstName: user.firstName as string,
+          lastName: user.lastName as string,
           email: user.email as string,
           role: user.role,
+          status: user.status,
           dob: user.dob?.toISOString() as string,
           phone: user.phone as string,
           address: user.address as string,
@@ -94,7 +95,13 @@ export default class AuthService {
 
     let user = await User.findOne({ email }).exec();
 
-    let payload: IUser = { id: "", username: "", email: "", role: 1 };
+    let payload: IUser = {
+      id: "",
+      username: "",
+      email: "",
+      role: 1,
+      status: 1,
+    };
     if (!user) {
       let result = await User.create({ ...googleAuthDto });
       payload.id = result.id;
@@ -106,8 +113,8 @@ export default class AuthService {
       payload.id = user.id;
       payload.email = user.email as string;
       payload.username = user.username as string;
-      payload.firstName = user.firstname as string;
-      payload.lastName = user.lastname as string;
+      payload.firstName = user.firstName as string;
+      payload.lastName = user.lastName as string;
     }
 
     const accessToken = createJWT(
@@ -148,6 +155,80 @@ export default class AuthService {
       status: 200,
       message: "Logout successfully",
       data: null,
+    };
+  };
+
+  static processNewToken = async (refreshToken: string, response: Response) => {
+    let payload = verifyJWT(
+      refreshToken,
+      process.env.JWT_REFRESH_TOKEN as string
+    );
+    if (!payload) throw new AppError("Invalid refresh token", 400);
+
+    const newAccessToken = createJWT(
+      payload,
+      process.env.JWT_ACCESS_TOKEN as string,
+      process.env.JWT_ACCESS_EXPIRE as string
+    );
+
+    // update new refresh token for user
+    const newRefreshToken = createJWT(
+      payload,
+      process.env.JWT_REFRESH_TOKEN as string,
+      process.env.JWT_REFRESH_EXPIRE as string
+    );
+    if (newRefreshToken)
+      await UserService.updateToken(newRefreshToken, payload.id);
+
+    response.clearCookie("refresh_token");
+    response.cookie("refresh_token", newRefreshToken, {
+      httpOnly: true,
+      maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
+    });
+
+    return {
+      status: 200,
+      message: "Get new token successfully",
+      data: {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        userCredentials: payload,
+      },
+    };
+  };
+
+  static verifyPassword = async (id: string, password: string) => {
+    let user = await User.findById(id).select("+password").exec();
+    if (user) {
+      const checkPW = await UserService.checkPassword(
+        user.password as string,
+        password
+      );
+      if (!checkPW) throw new AppError("Incorrect password", 401);
+    }
+
+    return {
+      status: 200,
+      message: "Pasword verified",
+      data: null,
+    };
+  };
+
+  static changePassword = async (
+    id: string,
+    newPassword: string,
+    confirmPW: string
+  ) => {
+    if (newPassword !== confirmPW)
+      throw new AppError("Passwords do not match", 400);
+
+    const hashPassword = await UserService.hashPassword(newPassword);
+    let res = await User.findByIdAndUpdate(id, { password: hashPassword });
+
+    return {
+      status: 200,
+      message: "Update password succesfully",
+      data: res,
     };
   };
 }
