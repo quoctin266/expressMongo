@@ -34,6 +34,7 @@ export default class CourseService {
 
     const resultCount = (
       await Course.find({
+        isDeleted: false,
         title: new RegExp(searchQuery, "i"),
         ...filterCourse,
       })
