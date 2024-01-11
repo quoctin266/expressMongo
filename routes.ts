@@ -8,6 +8,7 @@ import authRoutes from "./src/auth/auth.route";
 import fileRoutes from "./src/file/file.route";
 import categoryRoutes from "./src/category/category.route";
 import courseRoutes from "./src/course/course.route";
+import paymentRoutes from "./src/payment/payment.route";
 import { checkUserJWT } from "./src/middleware/jwt.service";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use("/auth", authRoutes);
 router.use("/files", fileRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/courses", courseRoutes);
+router.use("/payment", paymentRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);

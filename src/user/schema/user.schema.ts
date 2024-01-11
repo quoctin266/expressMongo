@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 // const mongoose_delete = require("mongoose-delete");
 
 const userSchema = new mongoose.Schema(
@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
     status: { type: Number, default: 1 },
     role: { type: Number, default: 1 },
     refreshToken: String,
+    cart: [{ type: Schema.Types.ObjectId, ref: "course" }],
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },

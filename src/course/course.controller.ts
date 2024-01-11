@@ -12,7 +12,13 @@ export default class CourseController {
     res.status(result.status).json(result);
   }
 
-  static async getDetail(req: Request, res: Response) {}
+  static async getDetail(req: Request, res: Response) {
+    const { id } = req.params;
+
+    let result = await CourseService.getCourseDetail(id);
+
+    res.status(result.status).json(result);
+  }
 
   static async update(req: Request, res: Response) {}
 

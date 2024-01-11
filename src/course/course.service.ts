@@ -62,4 +62,14 @@ export default class CourseService {
       },
     };
   };
+
+  static getCourseDetail = async (id: string) => {
+    let result = await Course.findById(id);
+
+    return {
+      status: 201,
+      message: "Get course detail successfully",
+      data: result,
+    };
+  };
 }

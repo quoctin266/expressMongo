@@ -10,6 +10,7 @@ const nonSecurePaths = [
   { path: "/auth/google-login", method: "POST" },
   { path: "/auth/refresh", method: "GET" },
   { path: "/categories", method: "GET" },
+  { path: "/payment/checkout", method: "GET" },
 ];
 
 const extractToken = (req: Request) => {

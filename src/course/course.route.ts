@@ -34,7 +34,7 @@ router.post(
   errorCatching(CourseController.create)
 );
 
-// router.get("/:id", errorCatching(UserController.getDetail));
+router.get("/:id", errorCatching(CourseController.getDetail));
 
 // router.patch("/:id", errorCatching(UserController.update));
 
