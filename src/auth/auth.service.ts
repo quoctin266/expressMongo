@@ -8,6 +8,10 @@ import { LoginUserDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";
 import ms from "ms";
 import { GoogleAuthDto } from "./dto/google-auth.dto";
+import ejs from "ejs";
+import FileService from "../file/file.service";
+import { join } from "path";
+import transporter from "../util/mail.config";
 require("dotenv").config();
 
 export default class AuthService {
@@ -19,7 +23,9 @@ export default class AuthService {
 
     const hashPassword = await UserService.hashPassword(password);
     registerUserDto.password = hashPassword;
-    let result = await User.create({ ...registerUserDto });
+    let result = await User.create({ ...registerUserDto, status: 0 });
+
+    await this.sendMailOtp(email);
 
     return {
       status: 200,
@@ -229,6 +235,49 @@ export default class AuthService {
       status: 200,
       message: "Update password succesfully",
       data: res,
+    };
+  };
+
+  static sendMailOtp = async (email: string) => {
+    let user = await User.findOne({ email });
+    let otp = Math.floor(Math.random() * 899999 + 100000);
+
+    await User.findByIdAndUpdate(user?._id, { otp });
+
+    let html = await ejs.renderFile(
+      join(FileService.getRootPath(), `src/views/otp.ejs`),
+      {
+        otp: otp,
+        username: user?.username,
+        redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
+      }
+    );
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL as string,
+      to: email,
+      subject: "Active your account",
+      html: html, // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else console.log("Email sent: ", info.response);
+    });
+  };
+
+  static checkOtp = async (userId: string, otp: number) => {
+    let user = await User.findById(userId);
+
+    if (user?.otp !== +otp) throw new AppError("Invalid otp", 401);
+
+    await User.findByIdAndUpdate(userId, { status: 1 });
+
+    return {
+      status: 200,
+      message: "Account verified",
+      data: null,
     };
   };
 }

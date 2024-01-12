@@ -32,6 +32,8 @@ router.get("/checkout", errorCatching(PaymentController.checkOut));
 
 router.patch("/orders/:id", errorCatching(PaymentController.updateOrderStatus));
 
+router.get("/mail/:orderId", errorCatching(PaymentController.sendMail));
+
 // router.get("/:id", errorCatching(CategoryController.getDetail));
 
 export default router;

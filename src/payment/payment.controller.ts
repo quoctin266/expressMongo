@@ -71,4 +71,12 @@ export default class PaymentController {
 
     res.status(result.status).json(result);
   }
+
+  static async sendMail(req: Request, res: Response) {
+    const { orderId } = req.params;
+
+    await PaymentService.sendMail(orderId);
+
+    res.status(200).json("ok");
+  }
 }

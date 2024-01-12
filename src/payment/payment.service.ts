@@ -5,6 +5,10 @@ import Course from "../course/schema/course.schema";
 import Order from "./schema/order.schema";
 import paypal from "paypal-rest-sdk";
 import { Response } from "express";
+import transporter from "../util/mail.config";
+import ejs from "ejs";
+import FileService from "../file/file.service";
+import { join } from "path";
 require("dotenv").config();
 
 const { PAYPAL_MODE, PAYPAL_CLIENT_KEY, PAYPAL_SECRET_KEY } = process.env;
@@ -100,6 +104,7 @@ export default class PaymentService {
 
   static updateOrderStatus = async (id: string) => {
     let res = await Order.findByIdAndUpdate(id, { orderStatus: 1 });
+    await this.sendMail(id);
 
     return {
       status: 200,
@@ -163,5 +168,32 @@ export default class PaymentService {
     } catch (error: any) {
       console.log(error.message);
     }
+  };
+
+  static sendMail = async (orderId: string) => {
+    const order = await Order.findById(orderId).populate("courseId");
+    const user = await User.findById(order?.userId);
+
+    let html = await ejs.renderFile(
+      join(FileService.getRootPath(), `src/views/invoice.ejs`),
+      {
+        name: user?.username,
+        courses: order?.courseId,
+        totalPrice: order?.totalPrice,
+      }
+    );
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL as string,
+      to: user?.email as string,
+      subject: "Cursus Invoice",
+      html: html, // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else console.log("Email sent: ", info.response);
+    });
   };
 }

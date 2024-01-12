@@ -63,4 +63,13 @@ export default class AuthController {
 
     res.status(result.status).json(result);
   }
+
+  static async checkOtp(req: Request, res: Response) {
+    const { userId } = req.params;
+    const { otp } = req.body;
+
+    let result = await AuthService.checkOtp(userId, otp as number);
+
+    res.status(result.status).json(result);
+  }
 }
