@@ -57,4 +57,10 @@ router.post("/reset-password", errorCatching(AuthController.changePW));
 
 router.post("/check-otp/:userId", errorCatching(AuthController.checkOtp));
 
+router.get("/resend-otp/:userId", errorCatching(AuthController.resendOtp));
+
+router.post("/forget-password", errorCatching(AuthController.forgetPassword));
+
+router.get("/verify-request", errorCatching(AuthController.verifyRequest));
+
 export default router;

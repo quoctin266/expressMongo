@@ -9,8 +9,15 @@ const nonSecurePaths = [
   { path: "/auth/register", method: "POST" },
   { path: "/auth/google-login", method: "POST" },
   { path: "/auth/refresh", method: "GET" },
+  { path: "/auth/check-otp", method: "POST" },
+  { path: "/auth/resend-otp", method: "GET" },
+  { path: "/auth/forget-password", method: "POST" },
+  { path: "/auth/verify-request", method: "GET" },
+  { path: "/auth/reset-password", method: "POST" },
   { path: "/categories", method: "GET" },
   { path: "/payment/checkout", method: "GET" },
+  { path: "/courses", method: "GET" },
+  { path: "/users", method: "GET" },
 ];
 
 const extractToken = (req: Request) => {

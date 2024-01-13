@@ -1,3 +1,5 @@
 export class UserFilterDto {
-  Role: number;
+  role: number;
+
+  searchQuery: string;
 }

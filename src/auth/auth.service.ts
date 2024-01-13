@@ -8,10 +8,9 @@ import { LoginUserDto } from "./dto/login-user.dto";
 import { RegisterUserDto } from "./dto/register-user.dto";
 import ms from "ms";
 import { GoogleAuthDto } from "./dto/google-auth.dto";
-import ejs from "ejs";
-import FileService from "../file/file.service";
-import { join } from "path";
-import transporter from "../util/mail.config";
+import { sendMail } from "../util/mail.config";
+import PassReset from "./schema/passReset.schema";
+import moment from "moment";
 require("dotenv").config();
 
 export default class AuthService {
@@ -53,6 +52,7 @@ export default class AuthService {
           dob: user.dob?.toISOString() as string,
           phone: user.phone as string,
           address: user.address as string,
+          googleAuth: user.googleAuth,
         };
         return result;
       }
@@ -107,9 +107,14 @@ export default class AuthService {
       email: "",
       role: 1,
       status: 1,
+      googleAuth: true,
     };
     if (!user) {
-      let result = await User.create({ ...googleAuthDto });
+      let result = await User.create({
+        ...googleAuthDto,
+        googleAuth: true,
+        status: 1,
+      });
       payload.id = result.id;
       payload.email = email;
       payload.username = username;
@@ -244,27 +249,32 @@ export default class AuthService {
 
     await User.findByIdAndUpdate(user?._id, { otp });
 
-    let html = await ejs.renderFile(
-      join(FileService.getRootPath(), `src/views/otp.ejs`),
-      {
-        otp: otp,
-        username: user?.username,
-        redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
-      }
-    );
-
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL as string,
-      to: email,
-      subject: "Active your account",
-      html: html, // html body
+    let template = "otp.ejs";
+    let subject = "Active your account";
+    let context = {
+      otp: otp,
+      username: user?.username,
+      redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else console.log("Email sent: ", info.response);
-    });
+    await sendMail(template, context, email, subject);
+  };
+
+  static resendOtp = async (userId: string) => {
+    let user = await User.findById(userId);
+    let otp = Math.floor(Math.random() * 899999 + 100000);
+
+    await User.findByIdAndUpdate(user?._id, { otp });
+
+    let template = "otp.ejs";
+    let subject = "Active your account";
+    let context = {
+      otp: otp,
+      username: user?.username,
+      redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
+    };
+
+    await sendMail(template, context, user?.email as string, subject);
   };
 
   static checkOtp = async (userId: string, otp: number) => {
@@ -278,6 +288,42 @@ export default class AuthService {
       status: 200,
       message: "Account verified",
       data: null,
+    };
+  };
+
+  static forgetPassword = async (email: string) => {
+    let user = await User.findOne({ email }).exec();
+    if (!user) throw new AppError("Email not found", 404);
+
+    let res = await PassReset.create({ userId: user._id });
+
+    let template = "resetRequest.ejs";
+    let subject = "Reset password";
+    let context = {
+      url: `http://localhost:8080/api/v1/auth/verify-request?requestId=${res._id}`,
+    };
+    await sendMail(template, context, email, subject);
+
+    return {
+      status: 201,
+      message: "Send request succesfully",
+      data: null,
+    };
+  };
+
+  static verifyRequest = async (requestId: string) => {
+    let request = await PassReset.findById(requestId)
+      .select("+createdAt")
+      .exec();
+    if (!request) return { status: 404 };
+
+    let hours = moment().diff(moment(request?.createdAt), "hours");
+
+    if (hours > 24) return { status: 400 };
+
+    return {
+      status: 200,
+      userId: request.userId,
     };
   };
 }

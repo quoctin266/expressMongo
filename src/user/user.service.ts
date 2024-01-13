@@ -67,13 +67,25 @@ export default class UserService {
     page: number,
     limit: number
   ) => {
+    let { searchQuery, ...filterUser } = filter;
+
     const defaultLimit = limit ? limit : 10;
     const skip = ((page ? page : 1) - 1) * defaultLimit;
 
-    const resultCount = (await User.find(filter)).length;
+    const resultCount = (
+      await User.find({
+        username: new RegExp(searchQuery, "i"),
+        ...filterUser,
+      })
+    ).length;
     const totalPages = Math.ceil(resultCount / defaultLimit);
 
-    let res = await User.find(filter).skip(skip).limit(defaultLimit);
+    let res = await User.find({
+      username: new RegExp(searchQuery, "i"),
+      ...filterUser,
+    })
+      .skip(skip)
+      .limit(defaultLimit);
 
     return {
       status: 200,

@@ -72,4 +72,34 @@ export default class AuthController {
 
     res.status(result.status).json(result);
   }
+
+  static async resendOtp(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    await AuthService.resendOtp(userId);
+
+    res.status(200).json({
+      status: 200,
+    });
+  }
+
+  static async forgetPassword(req: Request, res: Response) {
+    const { email } = req.body;
+
+    let result = await AuthService.forgetPassword(email as string);
+
+    res.status(result.status).json(result);
+  }
+
+  static async verifyRequest(req: Request, res: Response) {
+    const { requestId } = req.query;
+
+    let result = await AuthService.verifyRequest(requestId as string);
+
+    if (result.status === 200)
+      res.redirect(
+        `http://localhost:3000/set-new-password?userId=${result.userId}`
+      );
+    else res.redirect("http://localhost:3000/broken-link");
+  }
 }

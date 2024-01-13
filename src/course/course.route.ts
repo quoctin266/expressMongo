@@ -36,6 +36,18 @@ router.post(
 
 router.get("/:id", errorCatching(CourseController.getDetail));
 
-// router.patch("/:id", errorCatching(UserController.update));
+router.get(
+  "/students/:courseId",
+  errorCatching(CourseController.getCourseStudents)
+);
+
+router.get(
+  "/users/:userId",
+  errorCatching(CourseController.getUserCoursesList)
+);
+
+router.patch("/:id", errorCatching(CourseController.update));
+
+router.delete("/:id", errorCatching(CourseController.delete));
 
 export default router;

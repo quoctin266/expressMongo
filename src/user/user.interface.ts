@@ -11,4 +11,5 @@ export interface IUser {
   address?: string;
   role: number;
   status: number;
+  googleAuth: Boolean;
 }

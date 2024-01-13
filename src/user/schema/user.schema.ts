@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema(
     otp: { type: Number, default: 999999 },
     refreshToken: String,
     cart: [{ type: Schema.Types.ObjectId, ref: "course" }],
+    purchasedCourses: [{ type: Schema.Types.ObjectId, ref: "course" }],
+    googleAuth: { type: Boolean, default: false },
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },
