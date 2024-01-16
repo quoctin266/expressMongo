@@ -10,6 +10,8 @@ import categoryRoutes from "./src/category/category.route";
 import courseRoutes from "./src/course/course.route";
 import paymentRoutes from "./src/payment/payment.route";
 import readingRoutes from "./src/reading/reading.route";
+import videoRoutes from "./src/video/video.route";
+
 import { checkUserJWT } from "./src/middleware/jwt.service";
 
 const router = express.Router();
@@ -22,6 +24,7 @@ router.use("/categories", categoryRoutes);
 router.use("/courses", courseRoutes);
 router.use("/payment", paymentRoutes);
 router.use("/readings", readingRoutes);
+router.use("/videos", videoRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);

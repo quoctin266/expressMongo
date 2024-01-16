@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import AppError from "../custom/AppError";
 
-const acceptTypes = ["image/png", "image/jpeg", "text/plain"];
+const acceptTypes = ["image/png", "image/jpeg", "text/plain", "video/mp4"];
 
 export default class FileService {
   // get root directory of project
@@ -68,12 +68,12 @@ export default class FileService {
   static uploadFile = async (req: Request, file: UploadedFile) => {
     if (!acceptTypes.includes(file.mimetype))
       throw new AppError(
-        "Invalid file type. Expected type: image/jpeg|image/png|text/plain",
+        "Invalid file type. Expected type: image/jpeg|image/png|text/plain|video/mp4",
         422
       );
 
-    if (file.size > 1024 * 1024 * 5)
-      throw new AppError("Max size allowed is 5mb", 400);
+    if (file.size > 1024 * 1024 * 30)
+      throw new AppError("Max size allowed is 30mb", 400);
 
     const { uploadPath, fileName } = this.createPath(req, file);
 
