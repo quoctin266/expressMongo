@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import VideoService from "./video.service";
 import { CreateVideoDto } from "./dto/create-video.dto";
+import { UpdateVideoDto } from "./dto/update-video.dto";
 
 export default class VideoController {
   static async create(req: Request, res: Response) {
@@ -21,21 +22,29 @@ export default class VideoController {
     res.status(result.status).json(result);
   }
 
-  //   static async update(req: Request, res: Response) {
-  //     const { readingId } = req.params;
+  static async updateInfo(req: Request, res: Response) {
+    const { videoId } = req.params;
 
-  //     let result = await ReadingService.update(
-  //       readingId,
-  //       req.body as UpdateReadingDto
-  //     );
+    let result = await VideoService.updateInfo(
+      videoId,
+      req.body as UpdateVideoDto
+    );
 
-  //     res.status(result.status).json(result);
-  //   }
+    res.status(result.status).json(result);
+  }
 
-  //   static async delete(req: Request, res: Response) {
-  //     const { readingId } = req.params;
-  //     let result = await ReadingService.delete(readingId);
+  static async updateFile(req: Request, res: Response) {
+    const { videoId } = req.params;
 
-  //     res.status(result.status).json(result);
-  //   }
+    let result = await VideoService.updateFile(req, videoId);
+
+    res.status(result.status).json(result);
+  }
+
+  static async delete(req: Request, res: Response) {
+    const { videoId } = req.params;
+    let result = await VideoService.delete(videoId);
+
+    res.status(result.status).json(result);
+  }
 }

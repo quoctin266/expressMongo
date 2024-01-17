@@ -79,16 +79,37 @@ export default class VideoService {
     };
   };
 
-  //   static delete = async (readingId: string) => {
-  //     let reading = await Reading.findById(readingId).exec();
-  //     if (!reading) throw new AppError("Reading does not exist", 400);
+  static updateFile = async (req: Request, videoId: string) => {
+    let video = await Video.findById(videoId).exec();
+    if (!video) throw new AppError("Video does not exist", 400);
 
-  //     let res = await Reading.findByIdAndUpdate(readingId, { isDeleted: true });
+    if (!req.files || Object.keys(req.files).length === 0) {
+      throw new AppError("No files were uploaded", 400);
+    }
 
-  //     return {
-  //       status: 200,
-  //       message: "Delete reading successfully",
-  //       data: res,
-  //     };
-  //   };
+    let res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+
+    await FileService.removeFile(video.fileName as string);
+
+    await Video.findByIdAndUpdate(videoId, { fileName: res.data.fileName });
+
+    return {
+      status: 200,
+      message: "Update video file successfully",
+      data: null,
+    };
+  };
+
+  static delete = async (videoId: string) => {
+    let video = await Video.findById(videoId).exec();
+    if (!video) throw new AppError("Video does not exist", 400);
+
+    let res = await Video.findByIdAndUpdate(videoId, { isDeleted: true });
+
+    return {
+      status: 200,
+      message: "Delete video successfully",
+      data: res,
+    };
+  };
 }

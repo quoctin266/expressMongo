@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, Application } from "express";
+import express, { Request, Response, Application } from "express";
 import dotenv from "dotenv";
 import router from "./routes";
 import getConnection from "./src/database/db.connect";
@@ -13,8 +13,8 @@ const port = process.env.PORT || 8080;
 
 const app: Application = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 // config cors

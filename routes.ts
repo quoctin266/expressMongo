@@ -11,6 +11,8 @@ import courseRoutes from "./src/course/course.route";
 import paymentRoutes from "./src/payment/payment.route";
 import readingRoutes from "./src/reading/reading.route";
 import videoRoutes from "./src/video/video.route";
+import quizRoutes from "./src/quiz/quiz.route";
+import questionRoutes from "./src/question/question.route";
 
 import { checkUserJWT } from "./src/middleware/jwt.service";
 
@@ -25,6 +27,8 @@ router.use("/courses", courseRoutes);
 router.use("/payment", paymentRoutes);
 router.use("/readings", readingRoutes);
 router.use("/videos", videoRoutes);
+router.use("/quizes", quizRoutes);
+router.use("/questions", questionRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);

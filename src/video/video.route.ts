@@ -28,8 +28,10 @@ router.post(
 
 router.get("/courses/:courseId", errorCatching(VideoController.getVideos));
 
-// router.patch("/:readingId", errorCatching(ReadingController.update));
+router.patch("/info/:videoId", errorCatching(VideoController.updateInfo));
 
-// router.delete("/:readingId", errorCatching(ReadingController.delete));
+router.patch("/file/:videoId", errorCatching(VideoController.updateFile));
+
+router.delete("/:videoId", errorCatching(VideoController.delete));
 
 export default router;
