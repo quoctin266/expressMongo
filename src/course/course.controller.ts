@@ -7,6 +7,7 @@ import { UpdateCourseDto } from "./dto/update-course.dto";
 export default class CourseController {
   static async create(req: Request, res: Response) {
     let result = await CourseService.createNewCourse(
+      req,
       req.body as CreateCourseDto
     );
 

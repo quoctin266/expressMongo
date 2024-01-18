@@ -11,13 +11,11 @@ const questionSchema = new mongoose.Schema(
     quizId: { type: Schema.Types.ObjectId, ref: "quiz" },
     answers: [
       {
-        id: Schema.Types.ObjectId,
         content: String,
       },
     ],
     correctAnswers: [
       {
-        id: Schema.Types.ObjectId,
         content: String,
       },
     ],

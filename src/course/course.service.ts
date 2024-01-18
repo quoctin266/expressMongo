@@ -1,3 +1,4 @@
+import { Request } from "express";
 import AppError from "../custom/AppError";
 import User from "../user/schema/user.schema";
 import { parseBoolean } from "../util/library";
@@ -5,15 +6,29 @@ import { CourseFilterDto } from "./dto/course-filter.dto";
 import { CreateCourseDto } from "./dto/create-course.dto";
 import { UpdateCourseDto } from "./dto/update-course.dto";
 import Course from "./schema/course.schema";
+import FileService from "../file/file.service";
+import { UploadedFile } from "express-fileupload";
 
 export default class CourseService {
-  static createNewCourse = async (createCourseDto: CreateCourseDto) => {
+  static createNewCourse = async (
+    req: Request,
+    createCourseDto: CreateCourseDto
+  ) => {
     const { title } = createCourseDto;
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+      throw new AppError("No files were uploaded", 400);
+    }
 
     let course = await Course.findOne({ title }).exec();
     if (course) throw new AppError("Course title already exist", 409);
 
-    let result = await Course.create({ ...createCourseDto });
+    let res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+
+    let result = await Course.create({
+      ...createCourseDto,
+      image: res.data.fileName,
+    });
 
     return {
       status: 201,
@@ -85,6 +100,20 @@ export default class CourseService {
       .limit(defaultLimit)
       .sort(sortDescending ? `-${sortBy}` : `${sortBy}`);
 
+    let courseList = res.map((course) => {
+      const domainName = process.env.DOMAIN as string;
+      const port = process.env.PORT || "";
+      const imageUrl =
+        domainName + port + FileService.createImageLink(course.image as string);
+
+      const { image, ...rest } = course.toObject();
+
+      return {
+        ...rest,
+        imageUrl,
+      };
+    });
+
     return {
       status: 200,
       message: "Get course list successfully",
@@ -93,7 +122,7 @@ export default class CourseService {
         pageSize: defaultLimit,
         totalPages,
         resultCount,
-        items: res,
+        items: courseList,
       },
     };
   };

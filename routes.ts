@@ -13,6 +13,7 @@ import readingRoutes from "./src/reading/reading.route";
 import videoRoutes from "./src/video/video.route";
 import quizRoutes from "./src/quiz/quiz.route";
 import questionRoutes from "./src/question/question.route";
+import attemptRoutes from "./src/quizAttempt/quizAttempt.route";
 
 import { checkUserJWT } from "./src/middleware/jwt.service";
 
@@ -29,6 +30,7 @@ router.use("/readings", readingRoutes);
 router.use("/videos", videoRoutes);
 router.use("/quizes", quizRoutes);
 router.use("/questions", questionRoutes);
+router.use("/attempts", attemptRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);

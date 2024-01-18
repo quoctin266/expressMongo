@@ -7,6 +7,7 @@ const courseSchema = new mongoose.Schema(
     body: String,
     status: { type: Number, default: 1 },
     price: { type: Number, default: 0 },
+    image: String,
     creatorId: { type: Schema.Types.ObjectId, ref: "user" },
     categoryId: { type: Schema.Types.ObjectId, ref: "category" },
     students: [{ type: Schema.Types.ObjectId, ref: "user" }],
