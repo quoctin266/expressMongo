@@ -27,6 +27,7 @@ export default class CourseController {
 
     let result = await CourseService.updateCourse(
       id,
+      req,
       req.body as UpdateCourseDto
     );
 

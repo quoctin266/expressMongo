@@ -8,6 +8,7 @@ import { UpdateCourseDto } from "./dto/update-course.dto";
 import Course from "./schema/course.schema";
 import FileService from "../file/file.service";
 import { UploadedFile } from "express-fileupload";
+import { ObjectId, Types } from "mongoose";
 
 export default class CourseService {
   static createNewCourse = async (
@@ -39,6 +40,7 @@ export default class CourseService {
 
   static updateCourse = async (
     id: string,
+    req: Request,
     updateCourseDto: UpdateCourseDto
   ) => {
     const { title } = updateCourseDto;
@@ -47,12 +49,22 @@ export default class CourseService {
     if (course && course._id.toString() !== id)
       throw new AppError("Course title already exist", 409);
 
-    let result = await Course.findByIdAndUpdate(id, { ...updateCourseDto });
+    let res = null;
+    if (req.files && Object.keys(req.files).length !== 0) {
+      res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+
+      await FileService.removeFile(course?.image as string);
+    }
+
+    let updateResult = await Course.findByIdAndUpdate(id, {
+      ...updateCourseDto,
+      image: res?.data.fileName ? res.data.fileName : course?.image,
+    });
 
     return {
       status: 200,
       message: "Update course successfully",
-      data: result,
+      data: updateResult,
     };
   };
 
@@ -128,12 +140,20 @@ export default class CourseService {
   };
 
   static getCourseDetail = async (id: string) => {
-    let result = await Course.findById(id).select("+createdAt");
+    let course = await Course.findById(id).select("+createdAt");
+
+    const domainName = process.env.DOMAIN as string;
+    const port = process.env.PORT || "";
+    const imageUrl =
+      domainName + port + FileService.createImageLink(course?.image as string);
 
     return {
       status: 200,
       message: "Get course detail successfully",
-      data: result,
+      data: {
+        ...course?.toObject(),
+        imageUrl,
+      },
     };
   };
 
@@ -148,15 +168,30 @@ export default class CourseService {
   };
 
   static getUserCoursesList = async (userId: string) => {
-    let user = await User.findById(userId).populate(
-      "purchasedCourses",
-      "+createdAt"
+    let user = await User.findById(userId);
+
+    let courseList = await Promise.all(
+      (user?.purchasedCourses as Types.ObjectId[]).map(async (courseId) => {
+        let course = await Course.findById(courseId);
+
+        const domainName = process.env.DOMAIN as string;
+        const port = process.env.PORT || "";
+        const imageUrl =
+          domainName +
+          port +
+          FileService.createImageLink(course?.image as string);
+
+        return {
+          ...course?.toObject(),
+          imageUrl,
+        };
+      })
     );
 
     return {
       status: 200,
       message: "Get user's courses list successfully",
-      data: user?.purchasedCourses,
+      data: courseList,
     };
   };
 }
