@@ -8,6 +8,7 @@ export default class QuestionController {
     const { quizId } = req.params;
     let result = await QuestionService.create(
       quizId,
+      req,
       req.body as CreateQuestionDto
     );
 
@@ -26,6 +27,7 @@ export default class QuestionController {
 
     let result = await QuestionService.update(
       questionId,
+      req,
       req.body as UpdateQuestionDto
     );
 

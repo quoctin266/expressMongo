@@ -8,7 +8,8 @@ import { UpdateCourseDto } from "./dto/update-course.dto";
 import Course from "./schema/course.schema";
 import FileService from "../file/file.service";
 import { UploadedFile } from "express-fileupload";
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
+import Order from "../payment/schema/order.schema";
 
 export default class CourseService {
   static createNewCourse = async (
@@ -181,9 +182,14 @@ export default class CourseService {
           port +
           FileService.createImageLink(course?.image as string);
 
+        let order = await Order.findOne({ userId, courseId }).select(
+          "+createdAt"
+        );
+
         return {
           ...course?.toObject(),
           imageUrl,
+          purchasedDate: order?.createdAt,
         };
       })
     );
