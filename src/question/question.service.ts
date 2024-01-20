@@ -79,12 +79,7 @@ export default class QuestionService {
 
       let imageUrl = null;
       if (question.image) {
-        const domainName = process.env.DOMAIN as string;
-        const port = process.env.PORT || "";
-        imageUrl =
-          domainName +
-          port +
-          FileService.createImageLink(question.image as string);
+        imageUrl = FileService.createFileLink(question.image as string);
       }
 
       return {

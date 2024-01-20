@@ -21,6 +21,7 @@ const nonSecurePaths = [
   { path: "/readings", method: "GET" },
   { path: "/videos", method: "GET" },
   { path: "/quizes", method: "GET" },
+  { path: "/feedbacks", method: "GET" },
 ];
 
 const extractToken = (req: Request) => {

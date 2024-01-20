@@ -39,12 +39,7 @@ export default class VideoService {
     let result = await Video.find({ courseId, isDeleted: false });
 
     let videoList = result.map((video) => {
-      const domainName = process.env.DOMAIN as string;
-      const port = process.env.PORT || "";
-      const videoUrl =
-        domainName +
-        port +
-        FileService.createImageLink(video.fileName as string);
+      const videoUrl = FileService.createFileLink(video.fileName as string);
 
       const { fileName, ...rest } = video.toObject();
 

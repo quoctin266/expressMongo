@@ -114,10 +114,7 @@ export default class CourseService {
       .sort(sortDescending ? `-${sortBy}` : `${sortBy}`);
 
     let courseList = res.map((course) => {
-      const domainName = process.env.DOMAIN as string;
-      const port = process.env.PORT || "";
-      const imageUrl =
-        domainName + port + FileService.createImageLink(course.image as string);
+      const imageUrl = FileService.createFileLink(course.image as string);
 
       const { image, ...rest } = course.toObject();
 
@@ -143,10 +140,7 @@ export default class CourseService {
   static getCourseDetail = async (id: string) => {
     let course = await Course.findById(id).select("+createdAt");
 
-    const domainName = process.env.DOMAIN as string;
-    const port = process.env.PORT || "";
-    const imageUrl =
-      domainName + port + FileService.createImageLink(course?.image as string);
+    const imageUrl = FileService.createFileLink(course?.image as string);
 
     return {
       status: 200,
@@ -175,12 +169,7 @@ export default class CourseService {
       (user?.purchasedCourses as Types.ObjectId[]).map(async (courseId) => {
         let course = await Course.findById(courseId);
 
-        const domainName = process.env.DOMAIN as string;
-        const port = process.env.PORT || "";
-        const imageUrl =
-          domainName +
-          port +
-          FileService.createImageLink(course?.image as string);
+        const imageUrl = FileService.createFileLink(course?.image as string);
 
         let order = await Order.findOne({ userId, courseId }).select(
           "+createdAt"

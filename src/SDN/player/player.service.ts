@@ -10,10 +10,7 @@ export default class PlayerService {
     let result = await Player.find().populate("nation").exec();
 
     let playerList = result.map((player) => {
-      const domainName = process.env.DOMAIN as string;
-      const port = process.env.PORT || "";
-      const imageUrl =
-        domainName + port + FileService.createImageLink(player.img as string);
+      const imageUrl = FileService.createFileLink(player.img as string);
 
       const { img, ...rest } = player.toObject();
 
@@ -49,10 +46,7 @@ export default class PlayerService {
     let player = await Player.findById(id).exec();
     if (!player) throw new AppError("Player not found", 404);
 
-    const domainName = process.env.DOMAIN as string;
-    const port = process.env.PORT || "";
-    const imageUrl =
-      domainName + port + FileService.createImageLink(player.img as string);
+    const imageUrl = FileService.createFileLink(player.img as string);
 
     return {
       status: 200,

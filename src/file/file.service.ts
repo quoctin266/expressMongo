@@ -64,11 +64,18 @@ export default class FileService {
     return null;
   }
 
-  static createImageLink = (fileName: string) => {
-    return this.findFilePath(
-      fileName,
-      join(this.getRootPath(), "public")
-    )?.replace(join(this.getRootPath(), "public"), "");
+  static createFileLink = (fileName: string) => {
+    const domainName = process.env.DOMAIN as string;
+    const port = process.env.PORT || "";
+
+    return (
+      domainName +
+      port +
+      this.findFilePath(fileName, join(this.getRootPath(), "public"))?.replace(
+        join(this.getRootPath(), "public"),
+        ""
+      )
+    );
   };
 
   static uploadFile = async (req: Request, file: UploadedFile) => {
