@@ -6,6 +6,7 @@ const videoSchema = new mongoose.Schema(
     title: String,
     description: String,
     fileName: String,
+    sectionId: { type: Schema.Types.ObjectId, ref: "section" },
     courseId: { type: Schema.Types.ObjectId, ref: "course" },
     isDeleted: { type: Boolean, select: false, default: false },
     createdAt: { type: Date, select: false },

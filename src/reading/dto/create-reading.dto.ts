@@ -4,4 +4,6 @@ export class CreateReadingDto {
   body: string;
 
   description: string;
+
+  sectionId: string;
 }

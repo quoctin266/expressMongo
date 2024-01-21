@@ -1,14 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 // const mongoose_delete = require("mongoose-delete");
 
-const readingSchema = new mongoose.Schema(
+const sectionSchema = new mongoose.Schema(
   {
-    title: String,
-    body: String,
-    description: String,
-    isDeleted: { type: Boolean, default: false },
-    sectionId: { type: Schema.Types.ObjectId, ref: "section" },
+    name: String,
     courseId: { type: Schema.Types.ObjectId, ref: "course" },
+    isDeleted: { type: Boolean, select: false, default: false },
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },
@@ -16,6 +13,6 @@ const readingSchema = new mongoose.Schema(
 );
 
 // customerSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Reading = mongoose.model("reading", readingSchema);
+const Section = mongoose.model("section", sectionSchema);
 
-export default Reading;
+export default Section;

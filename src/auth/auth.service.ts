@@ -126,6 +126,7 @@ export default class AuthService {
       payload.username = user.username as string;
       payload.firstName = user.firstName as string;
       payload.lastName = user.lastName as string;
+      payload.role = user.role;
     }
 
     const accessToken = createJWT(
