@@ -19,15 +19,18 @@ export default class SectionService {
     };
   };
 
-  //   static getList = async () => {
-  //     let res = await Category.find({ isDeleted: false });
+  static getCourseSections = async (courseId: string) => {
+    let course = await Course.findById(courseId).exec();
+    if (!course) throw new AppError("Course not found", 400);
 
-  //     return {
-  //       status: 200,
-  //       message: "Get category list successfully",
-  //       data: res,
-  //     };
-  //   };
+    let res = await Section.find({ courseId, isDeleted: false });
+
+    return {
+      status: 200,
+      message: "Get course's sections successfully",
+      data: res,
+    };
+  };
 
   //   static update = async (id: string, name: string) => {
   //     let category = await Category.findOne({ name }).exec();
