@@ -9,11 +9,13 @@ export default class SectionController {
     res.status(result.status).json(result);
   }
 
-  //   static async getList(req: Request, res: Response) {
-  //     let result = await CategoryService.getList();
+  static async getList(req: Request, res: Response) {
+    const { courseId } = req.params;
 
-  //     res.status(result.status).json(result);
-  //   }
+    let result = await SectionService.getCourseSections(courseId);
+
+    res.status(result.status).json(result);
+  }
 
   //   static async update(req: Request, res: Response) {
   //     const { id } = req.params;

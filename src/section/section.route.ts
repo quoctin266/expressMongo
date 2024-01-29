@@ -17,7 +17,7 @@ const validateCreateSection = {
   },
 };
 
-// router.get("/", errorCatching(CategoryController.getList));
+router.get("/:courseId", errorCatching(SectionController.getList));
 
 router.post(
   "/",
