@@ -5,6 +5,9 @@ import AppError from "../custom/AppError";
 require("dotenv").config();
 
 const nonSecurePaths = [
+  { path: "/players", method: "GET" },
+  { path: "/nations", method: "GET" },
+
   { path: "/auth/login", method: "POST" },
   { path: "/auth/register", method: "POST" },
   { path: "/auth/google-login", method: "POST" },
