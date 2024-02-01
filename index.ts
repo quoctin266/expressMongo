@@ -20,7 +20,7 @@ app.use(cookieParser());
 // config cors
 app.use(
   cors({
-    origin: true,
+    origin: ["https://cursus-vip-pro.netlify.app", "http://localhost:3000"],
     credentials: true,
     optionsSuccessStatus: 200,
   })

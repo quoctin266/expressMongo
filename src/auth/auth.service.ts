@@ -80,10 +80,10 @@ export default class AuthService {
     );
     if (refreshToken) await UserService.updateToken(refreshToken, payload.id);
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
-    });
+    // res.cookie("refresh_token", refreshToken, {
+    //   httpOnly: true,
+    //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
+    // });
 
     return {
       status: 200,
@@ -143,10 +143,10 @@ export default class AuthService {
     );
     if (refreshToken) await UserService.updateToken(refreshToken, payload.id);
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
-    });
+    // res.cookie("refresh_token", refreshToken, {
+    //   httpOnly: true,
+    //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
+    // });
 
     return {
       status: 200,
@@ -160,7 +160,7 @@ export default class AuthService {
   };
 
   static logoutUser = async (user: IUser, res: Response) => {
-    res.clearCookie("refresh_token");
+    // res.clearCookie("refresh_token");
     await UserService.updateToken("", user.id);
 
     return {
@@ -192,11 +192,11 @@ export default class AuthService {
     if (newRefreshToken)
       await UserService.updateToken(newRefreshToken, payload.id);
 
-    response.clearCookie("refresh_token");
-    response.cookie("refresh_token", newRefreshToken, {
-      httpOnly: true,
-      maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
-    });
+    // response.clearCookie("refresh_token");
+    // response.cookie("refresh_token", newRefreshToken, {
+    //   httpOnly: true,
+    //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
+    // });
 
     return {
       status: 200,

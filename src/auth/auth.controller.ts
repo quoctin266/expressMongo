@@ -32,8 +32,9 @@ export default class AuthController {
   }
 
   static async getNewToken(req: Request, res: Response) {
-    let refreshToken: string = req.cookies["refresh_token"];
-    let result = await AuthService.processNewToken(refreshToken, res);
+    // let refreshToken: string = req.cookies["refresh_token"];
+    const { refreshToken } = req.body;
+    let result = await AuthService.processNewToken(refreshToken as string, res);
 
     res.status(result.status).json(result);
   }
