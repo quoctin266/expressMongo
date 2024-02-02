@@ -307,12 +307,11 @@ export default class AuthService {
       process.env.NODE_ENV === "development"
         ? process.env.BACKEND_DOMAIN_DEVELOPMENT
         : process.env.BACKEND_DOMAIN_PRODUCTION;
-    const PORT = process.env.PORT || "";
 
     let template = "resetRequest.ejs";
     let subject = "Reset password";
     let context = {
-      url: `${backendDomain}${PORT}/api/v1/auth/verify-request?requestId=${res._id}`,
+      url: `${backendDomain}/api/v1/auth/verify-request?requestId=${res._id}`,
     };
     await sendMail(template, context, email, subject);
 

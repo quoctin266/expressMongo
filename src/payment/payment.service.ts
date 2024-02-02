@@ -130,13 +130,12 @@ export default class PaymentService {
       process.env.NODE_ENV === "development"
         ? process.env.BACKEND_DOMAIN_DEVELOPMENT
         : process.env.BACKEND_DOMAIN_PRODUCTION;
-    const PORT = process.env.PORT || "";
 
     return {
       status: 200,
       message: "Confirm order successfully",
       data: {
-        url: `${backendDomain}${PORT}/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}`,
+        url: `${backendDomain}/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}`,
       },
     };
   };

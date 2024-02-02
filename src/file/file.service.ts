@@ -69,11 +69,9 @@ export default class FileService {
       process.env.NODE_ENV === "development"
         ? (process.env.BACKEND_DOMAIN_DEVELOPMENT as string)
         : (process.env.BACKEND_DOMAIN_PRODUCTION as string);
-    const PORT = (process.env.PORT as string) || "";
 
     return (
       backendDomain +
-      PORT +
       this.findFilePath(fileName, join(this.getRootPath(), "public"))?.replace(
         join(this.getRootPath(), "public"),
         ""
