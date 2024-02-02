@@ -5,12 +5,11 @@
   "main": "index.ts",
   "scripts": {
     "start": "npx tsc & nodemon index.ts",
-    "production": "node index.js",
-    "prebuild": "npm install",
-    "build": "npx tsc && npm run copy-views && npm run copy-script && npm run create-dir ",
+    "production": "node ./dist/index.js",
+    "prebuild": "npm install && rimraf ./dist",
+    "build": "npx tsc && npm run copy-views && npm run create-dir ",
     "create-dir": "mkdirp ./dist/public",
-    "copy-views": "copyfiles --all \"./src/views/*\" ./dist",
-    "copy-script": "copyfiles \"./package.json\" ./dist"
+    "copy-views": "copyfiles --all --exclude \"./**/*.{ts,tsx}\" \"./src/**/*\" ./dist"
   },
   "keywords": [],
   "author": "",
