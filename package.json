@@ -7,7 +7,7 @@
     "start": "npx tsc & nodemon index.ts",
     "production": "node index.js",
     "prebuild": "rimraf ./dist",
-    "build": "npx tsc && npm run copy-views && npm run create-dir ",
+    "build": "npm install && npx tsc && npm run copy-views && npm run create-dir ",
     "create-dir": "mkdirp ./dist/public",
     "copy-views": "copyfiles --all --exclude \"./**/*.{ts,tsx}\" \"./src/**/*\" ./dist"
   },
