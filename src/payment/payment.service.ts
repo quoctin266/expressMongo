@@ -8,6 +8,11 @@ import { Response } from "express";
 import { sendMail } from "../util/mail.config";
 require("dotenv").config();
 
+const frontendDomain =
+  process.env.NODE_ENV === "development"
+    ? process.env.FRONTEND_DOMAIN_DEVELOPMENT
+    : process.env.FRONTEND_DOMAIN_PRODUCTION;
+
 const { PAYPAL_MODE, PAYPAL_CLIENT_KEY, PAYPAL_SECRET_KEY } = process.env;
 
 paypal.configure({
@@ -121,11 +126,17 @@ export default class PaymentService {
   };
 
   static confirmOrder = async (orderId: string, totalPrice: Number) => {
+    const backendDomain =
+      process.env.NODE_ENV === "development"
+        ? process.env.BACKEND_DOMAIN_DEVELOPMENT
+        : process.env.BACKEND_DOMAIN_PRODUCTION;
+    const PORT = process.env.PORT || "";
+
     return {
       status: 200,
       message: "Confirm order successfully",
       data: {
-        url: `http://localhost:8080/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}`,
+        url: `${backendDomain}${PORT}/api/v1/payment/checkout?orderId=${orderId}&totalPrice=${totalPrice}`,
       },
     };
   };
@@ -142,8 +153,8 @@ export default class PaymentService {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: `http://localhost:3000/payment/invoice?orderId=${orderId}`,
-          cancel_url: "http://localhost:3000/payment-cancel",
+          return_url: `${frontendDomain}/payment/invoice?orderId=${orderId}`,
+          cancel_url: `${frontendDomain}/payment-cancel`,
         },
         transactions: [
           {
@@ -187,6 +198,7 @@ export default class PaymentService {
       name: user?.username,
       courses: order?.courseId,
       totalPrice: order?.totalPrice,
+      homeUrl: frontendDomain,
     };
 
     await sendMail(template, context, user?.email as string, subject);

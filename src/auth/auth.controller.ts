@@ -4,6 +4,7 @@ import AuthService from "./auth.service";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { IUser } from "../user/user.interface";
 import { GoogleAuthDto } from "./dto/google-auth.dto";
+require("dotenv").config();
 
 export default class AuthController {
   static async register(req: Request, res: Response) {
@@ -94,13 +95,17 @@ export default class AuthController {
 
   static async verifyRequest(req: Request, res: Response) {
     const { requestId } = req.query;
+    const frontendDomain =
+      process.env.NODE_ENV === "development"
+        ? process.env.FRONTEND_DOMAIN_DEVELOPMENT
+        : process.env.FRONTEND_DOMAIN_PRODUCTION;
 
     let result = await AuthService.verifyRequest(requestId as string);
 
     if (result.status === 200)
       res.redirect(
-        `http://localhost:3000/set-new-password?userId=${result.userId}`
+        `${frontendDomain}/set-new-password?userId=${result.userId}`
       );
-    else res.redirect("http://localhost:3000/broken-link");
+    else res.redirect(`${frontendDomain}/broken-link`);
   }
 }

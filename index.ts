@@ -10,6 +10,10 @@ import fileUpload from "express-fileupload";
 //For env File
 dotenv.config();
 const port = process.env.PORT || 8080;
+const frontendDomain =
+  process.env.NODE_ENV === "development"
+    ? process.env.FRONTEND_DOMAIN_DEVELOPMENT
+    : process.env.FRONTEND_DOMAIN_PRODUCTION;
 
 const app: Application = express();
 
@@ -20,7 +24,7 @@ app.use(cookieParser());
 // config cors
 app.use(
   cors({
-    origin: ["https://cursus-vip-pro.netlify.app", "http://localhost:3000"],
+    origin: frontendDomain,
     credentials: true,
     optionsSuccessStatus: 200,
   })

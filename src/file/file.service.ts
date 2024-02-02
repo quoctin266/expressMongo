@@ -65,12 +65,15 @@ export default class FileService {
   }
 
   static createFileLink = (fileName: string) => {
-    const domainName = process.env.DOMAIN as string;
-    const port = process.env.PORT || "";
+    const backendDomain =
+      process.env.NODE_ENV === "development"
+        ? (process.env.BACKEND_DOMAIN_DEVELOPMENT as string)
+        : (process.env.BACKEND_DOMAIN_PRODUCTION as string);
+    const PORT = (process.env.PORT as string) || "";
 
     return (
-      domainName +
-      port +
+      backendDomain +
+      PORT +
       this.findFilePath(fileName, join(this.getRootPath(), "public"))?.replace(
         join(this.getRootPath(), "public"),
         ""

@@ -13,6 +13,11 @@ import PassReset from "./schema/passReset.schema";
 import moment from "moment";
 require("dotenv").config();
 
+const frontendDomain =
+  process.env.NODE_ENV === "development"
+    ? process.env.FRONTEND_DOMAIN_DEVELOPMENT
+    : process.env.FRONTEND_DOMAIN_PRODUCTION;
+
 export default class AuthService {
   static registerNewUser = async (registerUserDto: RegisterUserDto) => {
     const { email, password } = registerUserDto;
@@ -255,7 +260,7 @@ export default class AuthService {
     let context = {
       otp: otp,
       username: user?.username,
-      redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
+      redirectUrl: `${frontendDomain}/verify-account?userId=${user?._id}`,
     };
 
     await sendMail(template, context, email, subject);
@@ -272,7 +277,7 @@ export default class AuthService {
     let context = {
       otp: otp,
       username: user?.username,
-      redirectUrl: `http://localhost:3000/verify-account?userId=${user?._id}`,
+      redirectUrl: `${frontendDomain}/verify-account?userId=${user?._id}`,
     };
 
     await sendMail(template, context, user?.email as string, subject);
@@ -298,10 +303,16 @@ export default class AuthService {
 
     let res = await PassReset.create({ userId: user._id });
 
+    const backendDomain =
+      process.env.NODE_ENV === "development"
+        ? process.env.BACKEND_DOMAIN_DEVELOPMENT
+        : process.env.BACKEND_DOMAIN_PRODUCTION;
+    const PORT = process.env.PORT || "";
+
     let template = "resetRequest.ejs";
     let subject = "Reset password";
     let context = {
-      url: `http://localhost:8080/api/v1/auth/verify-request?requestId=${res._id}`,
+      url: `${backendDomain}${PORT}/api/v1/auth/verify-request?requestId=${res._id}`,
     };
     await sendMail(template, context, email, subject);
 
