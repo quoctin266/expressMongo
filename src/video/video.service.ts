@@ -17,11 +17,14 @@ export default class VideoService {
       throw new AppError("No files were uploaded", 400);
     }
 
-    let res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+    let res = await FileService.uploadFileAWS(
+      req,
+      req.files.file as UploadedFile
+    );
 
     let createRes = await Video.create({
       ...createVideoDto,
-      fileName: res.data.fileName,
+      fileName: res.data,
       courseId,
     });
 
@@ -39,7 +42,7 @@ export default class VideoService {
     let result = await Video.find({ courseId, isDeleted: false });
 
     let videoList = result.map((video) => {
-      const videoUrl = FileService.createFileLink(video.fileName as string);
+      const videoUrl = video.fileName?.url;
 
       const { fileName, ...rest } = video.toObject();
 
@@ -82,11 +85,14 @@ export default class VideoService {
       throw new AppError("No files were uploaded", 400);
     }
 
-    let res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+    let res = await FileService.uploadFileAWS(
+      req,
+      req.files.file as UploadedFile
+    );
 
-    await FileService.removeFile(video.fileName as string);
+    await FileService.removeFileAWS(video.fileName?.key as string);
 
-    await Video.findByIdAndUpdate(videoId, { fileName: res.data.fileName });
+    await Video.findByIdAndUpdate(videoId, { fileName: res.data });
 
     return {
       status: 200,

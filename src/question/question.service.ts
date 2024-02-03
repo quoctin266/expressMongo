@@ -25,7 +25,7 @@ export default class QuestionService {
 
     let uploadRes = null;
     if (req.files && Object.keys(req.files).length !== 0) {
-      uploadRes = await FileService.uploadFile(
+      uploadRes = await FileService.uploadFileAWS(
         req,
         req.files.file as UploadedFile
       );
@@ -51,7 +51,7 @@ export default class QuestionService {
 
     let res = await Question.create({
       ...createData,
-      image: uploadRes?.data.fileName,
+      image: uploadRes?.data,
       quizId,
       answers: answersData,
       correctAnswers: correctAnswersData,
@@ -79,7 +79,7 @@ export default class QuestionService {
 
       let imageUrl = null;
       if (question.image) {
-        imageUrl = FileService.createFileLink(question.image as string);
+        imageUrl = question.image.url;
       }
 
       return {
@@ -114,12 +114,12 @@ export default class QuestionService {
 
     let uploadRes = null;
     if (req.files && Object.keys(req.files).length !== 0) {
-      uploadRes = await FileService.uploadFile(
+      uploadRes = await FileService.uploadFileAWS(
         req,
         req.files.file as UploadedFile
       );
 
-      await FileService.removeFile(question.image as string);
+      await FileService.removeFileAWS(question.image?.key as string);
     }
 
     const { answers, correctAnswers, ...updateData } = updateQuestionDto;
@@ -144,7 +144,7 @@ export default class QuestionService {
 
     let res = await Question.findByIdAndUpdate(questionId, {
       ...updateData,
-      image: uploadRes?.data.fileName,
+      image: uploadRes?.data,
       answers: answersData,
       correctAnswers: correctAnswersData,
     });

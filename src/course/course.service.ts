@@ -25,11 +25,14 @@ export default class CourseService {
     let course = await Course.findOne({ title }).exec();
     if (course) throw new AppError("Course title already exist", 409);
 
-    let res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+    let res = await FileService.uploadFileAWS(
+      req,
+      req.files.file as UploadedFile
+    );
 
     let result = await Course.create({
       ...createCourseDto,
-      image: res.data.fileName,
+      image: res.data,
     });
 
     return {
@@ -52,14 +55,18 @@ export default class CourseService {
 
     let res = null;
     if (req.files && Object.keys(req.files).length !== 0) {
-      res = await FileService.uploadFile(req, req.files.file as UploadedFile);
+      res = await FileService.uploadFileAWS(
+        req,
+        req.files.file as UploadedFile
+      );
 
-      await FileService.removeFile(course?.image as string);
+      await FileService.removeFileAWS(course?.image?.key as string);
     }
 
+    const image = res?.data ? res.data : course?.image;
     let updateResult = await Course.findByIdAndUpdate(id, {
       ...updateCourseDto,
-      image: res?.data.fileName ? res.data.fileName : course?.image,
+      image,
     });
 
     return {
@@ -114,7 +121,7 @@ export default class CourseService {
       .sort(sortDescending ? `-${sortBy}` : `${sortBy}`);
 
     let courseList = res.map((course) => {
-      const imageUrl = FileService.createFileLink(course.image as string);
+      const imageUrl = course.image?.url;
 
       const { image, ...rest } = course.toObject();
 
@@ -140,7 +147,7 @@ export default class CourseService {
   static getCourseDetail = async (id: string) => {
     let course = await Course.findById(id).select("+createdAt");
 
-    const imageUrl = FileService.createFileLink(course?.image as string);
+    const imageUrl = course?.image?.url;
 
     return {
       status: 200,
@@ -169,7 +176,7 @@ export default class CourseService {
       (user?.purchasedCourses as Types.ObjectId[]).map(async (courseId) => {
         let course = await Course.findById(courseId);
 
-        const imageUrl = FileService.createFileLink(course?.image as string);
+        const imageUrl = course?.image?.url;
 
         let order = await Order.findOne({ userId, courseId }).select(
           "+createdAt"

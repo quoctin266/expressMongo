@@ -7,14 +7,14 @@
     "start": "npx tsc & nodemon index.ts",
     "production": "node ./dist/index.js",
     "prebuild": "npm install",
-    "build": "npx tsc && npm run copy-views && npm run create-dir ",
-    "create-dir": "mkdirp ./dist/public",
+    "build": "npx tsc && npm run copy-views",
     "copy-views": "copyfiles --all --exclude \"./**/*.{ts,tsx}\" \"./src/**/*\" ./dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1550.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

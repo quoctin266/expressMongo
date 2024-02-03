@@ -9,7 +9,7 @@ export default class FileController {
       throw new AppError("No files were uploaded", 400);
     }
 
-    let result = await FileService.uploadFile(
+    let result = await FileService.uploadFileAWS(
       req,
       req.files.file as UploadedFile
     );
@@ -19,7 +19,7 @@ export default class FileController {
   }
 
   static async delete(req: Request, res: Response) {
-    let result = await FileService.removeFile(req.headers.filename as string);
+    let result = await FileService.removeFileAWS(req.headers.key as string);
 
     // res.status(result.status).json(result);
     res.status(result.status).json(result);
