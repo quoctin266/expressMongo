@@ -6,6 +6,7 @@ import { existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import AppError from "../custom/AppError";
 import AWS from "aws-sdk";
+require("dotenv").config();
 
 const BUCKET = process.env.BUCKET as string;
 const acceptTypes = [
