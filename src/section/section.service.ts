@@ -1,6 +1,11 @@
 import Course from "../course/schema/course.schema";
 import AppError from "../custom/AppError";
+import Question from "../question/schema/question.schema";
+import Quiz from "../quiz/schema/quiz.schema";
+import Reading from "../reading/schema/reading.schema";
+import Video from "../video/schema/video.schema";
 import { CreateSectionDto } from "./dto/create-section.dto";
+import { UpdateSectionDto } from "./dto/update-section.dto";
 import Section from "./schema/section.schema";
 
 export default class SectionService {
@@ -32,32 +37,41 @@ export default class SectionService {
     };
   };
 
-  //   static update = async (id: string, name: string) => {
-  //     let category = await Category.findOne({ name }).exec();
-  //     if (category && category.id !== id)
-  //       throw new AppError("Category already exist", 400);
+  static update = async (id: string, updateSectionDto: UpdateSectionDto) => {
+    let section = await Section.findById(id).exec();
+    if (!section) throw new AppError("Section does not exist", 400);
 
-  //     let res = await Category.findByIdAndUpdate(id, { name });
+    let res = await Section.findByIdAndUpdate(id, { ...updateSectionDto });
 
-  //     return {
-  //       status: 200,
-  //       message: "Update category successfully",
-  //       data: res,
-  //     };
-  //   };
+    return {
+      status: 200,
+      message: "Update section successfully",
+      data: res,
+    };
+  };
 
-  //   static delete = async (id: string) => {
-  //     let category = await Category.findById(id).exec();
-  //     if (!category) throw new AppError("Category does not exist", 404);
+  static delete = async (sectionId: string) => {
+    let section = await Section.findById(sectionId).exec();
+    if (!section) throw new AppError("Section does not exist", 404);
 
-  //     let res = await Category.findByIdAndUpdate(id, { isDeleted: true });
+    // delete all questions of section quizes
+    const sectionQuizes = await Quiz.find({ sectionId, isDeleted: false });
+    for (const quiz of sectionQuizes) {
+      await Question.updateMany({ quizId: quiz.id }, { isDeleted: true });
+    }
 
-  //     return {
-  //       status: 200,
-  //       message: "Delete category successfully",
-  //       data: res,
-  //     };
-  //   };
+    await Quiz.updateMany({ sectionId }, { isDeleted: true });
+    await Video.updateMany({ sectionId }, { isDeleted: true });
+    await Reading.updateMany({ sectionId }, { isDeleted: true });
+
+    let res = await Section.findByIdAndUpdate(sectionId, { isDeleted: true });
+
+    return {
+      status: 200,
+      message: "Delete section successfully",
+      data: res,
+    };
+  };
 
   //   static getDetail = async (id: string) => {
   //     let res = await Category.findById(id);

@@ -22,7 +22,7 @@ export default class CourseService {
       throw new AppError("No files were uploaded", 400);
     }
 
-    let course = await Course.findOne({ title }).exec();
+    let course = await Course.findOne({ title, isDeleted: false }).exec();
     if (course) throw new AppError("Course title already exist", 409);
 
     let res = await FileService.uploadFileAWS(
@@ -60,7 +60,8 @@ export default class CourseService {
         req.files.file as UploadedFile
       );
 
-      await FileService.removeFileAWS(course?.image?.key as string);
+      const currentCourse = await Course.findById(id).exec();
+      await FileService.removeFileAWS(currentCourse?.image?.key as string);
     }
 
     const image = res?.data ? res.data : course?.image;

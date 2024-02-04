@@ -193,7 +193,7 @@ export default class FileService {
         data: null,
       };
     } catch (error) {
-      console.log(error);
+      console.log(">>> Check AWS error", error);
       return {
         status: 404,
         message: "File not found",

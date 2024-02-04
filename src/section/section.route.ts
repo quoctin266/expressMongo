@@ -26,9 +26,9 @@ router.post(
   errorCatching(SectionController.create)
 );
 
-// router.patch("/:id", errorCatching(CategoryController.update));
+router.patch("/:id", errorCatching(SectionController.update));
 
-// router.delete("/:id", errorCatching(CategoryController.delete));
+router.delete("/:id", errorCatching(SectionController.delete));
 
 // router.get("/:id", errorCatching(CategoryController.getDetail));
 

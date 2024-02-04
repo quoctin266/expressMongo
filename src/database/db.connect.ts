@@ -8,15 +8,8 @@ const dbState = [
   { value: 3, label: "disconnecting" },
 ];
 
-const dbHost =
-  process.env.NODE_ENV === "development"
-    ? (process.env.DB_HOST_DEVELOPMENT as string)
-    : (process.env.DB_HOST_PRODUCTION as string);
-
-const dbPass =
-  process.env.NODE_ENV === "development"
-    ? (process.env.DB_PASS_DEVELOPMENT as string)
-    : (process.env.DB_PASS_PRODUCTION as string);
+const dbHost = process.env.DB_HOST_PRODUCTION as string;
+const dbPass = process.env.DB_PASS_PRODUCTION as string;
 
 const getConnection = async () => {
   const options = {
