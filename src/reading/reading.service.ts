@@ -34,6 +34,19 @@ export default class ReadingService {
     };
   };
 
+  static getSectionReadings = async (sectionId: string) => {
+    let res = await Reading.find({ sectionId, isDeleted: false }).select([
+      "-courseId",
+      "-sectionId",
+    ]);
+
+    return {
+      status: 200,
+      message: "Get section's readings successfully",
+      data: res,
+    };
+  };
+
   static update = async (
     readingId: string,
     updateReadingDto: UpdateReadingDto

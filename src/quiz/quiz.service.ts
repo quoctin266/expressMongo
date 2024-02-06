@@ -1,5 +1,6 @@
 import Course from "../course/schema/course.schema";
 import AppError from "../custom/AppError";
+import QuestionService from "../question/question.service";
 import { CreateQuizDto } from "./dto/create-quiz.dto";
 import { UpdateQuizDto } from "./dto/update-quiz.dto";
 import Quiz from "./schema/quiz.schema";
@@ -28,6 +29,45 @@ export default class QuizService {
       status: 200,
       message: "Get course's quizes successfully",
       data: res,
+    };
+  };
+
+  static getSectionQuizes = async (sectionId: string) => {
+    let quizes = await Quiz.find({ sectionId, isDeleted: false }).select([
+      "-courseId",
+      "-sectionId",
+    ]);
+
+    let data = await Promise.all(
+      quizes.map(async (quiz) => {
+        let questions = (await QuestionService.getQuizQuestions(quiz.id)).data;
+
+        let dataQuestions = questions.map((question) => {
+          // prepare answers array
+          let answers = question.answers.map((item, answerIndex) => {
+            return {
+              id: question.answerIds[answerIndex],
+              description: item,
+              isCorrect: question.correctAnswers.includes(item),
+            };
+          });
+
+          const { quizId, correctAnswers, answerIds, ...rest } = question;
+
+          return { ...rest, answers };
+        });
+
+        return {
+          ...quiz.toObject(),
+          questions: dataQuestions,
+        };
+      })
+    );
+
+    return {
+      status: 200,
+      message: "Get section's quizes successfully",
+      data,
     };
   };
 

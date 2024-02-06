@@ -1,5 +1,5 @@
 export class FilterCourseRequestDto {
-  type: string;
+  typeQuery: string;
 
   status: number;
 

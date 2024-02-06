@@ -6,7 +6,7 @@ const readingSchema = new mongoose.Schema(
     title: String,
     body: String,
     description: String,
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, select: false, default: false },
     sectionId: { type: Schema.Types.ObjectId, ref: "section" },
     courseId: { type: Schema.Types.ObjectId, ref: "course" },
     createdAt: { type: Date, select: false },

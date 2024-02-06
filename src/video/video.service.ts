@@ -59,6 +59,30 @@ export default class VideoService {
     };
   };
 
+  static getSectionVideos = async (sectionId: string) => {
+    let result = await Video.find({ sectionId, isDeleted: false }).select([
+      "-courseId",
+      "-sectionId",
+    ]);
+
+    let videoList = result.map((video) => {
+      const videoUrl = video.fileName?.url;
+
+      const { fileName, ...rest } = video.toObject();
+
+      return {
+        ...rest,
+        videoUrl,
+      };
+    });
+
+    return {
+      status: 200,
+      message: "Get section's videos successfully",
+      data: videoList,
+    };
+  };
+
   static updateInfo = async (
     videoId: string,
     updateVideoDto: UpdateVideoDto

@@ -8,7 +8,7 @@ const questionSchema = new mongoose.Schema(
     point: Number,
     choiceType: Number,
     image: { url: String, key: String },
-    isDeleted: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false, select: false },
     quizId: { type: Schema.Types.ObjectId, ref: "quiz" },
     answers: [
       {
