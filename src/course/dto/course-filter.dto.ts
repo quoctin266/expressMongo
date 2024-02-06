@@ -8,4 +8,6 @@ export class CourseFilterDto {
   sortDescending: boolean;
 
   creatorId: string;
+
+  status: string;
 }

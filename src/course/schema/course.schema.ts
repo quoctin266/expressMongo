@@ -5,7 +5,7 @@ const courseSchema = new mongoose.Schema(
   {
     title: String,
     body: String,
-    status: { type: Number, default: 1 },
+    status: { type: String, default: "pending" },
     price: { type: Number, default: 0 },
     image: { url: String, key: String },
     creatorId: { type: Schema.Types.ObjectId, ref: "user" },

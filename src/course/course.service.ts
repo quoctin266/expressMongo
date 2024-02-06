@@ -10,6 +10,7 @@ import FileService from "../file/file.service";
 import { UploadedFile } from "express-fileupload";
 import { Types } from "mongoose";
 import Order from "../payment/schema/order.schema";
+import CourseRequest from "../courseRequest/schema/courseRequest.schema";
 
 export default class CourseService {
   static createNewCourse = async (
@@ -68,7 +69,16 @@ export default class CourseService {
     let updateResult = await Course.findByIdAndUpdate(id, {
       ...updateCourseDto,
       image,
+      status: "pending",
     });
+
+    let requestCourse = {
+      type: "Edit Course",
+      userId: (req as any).user.id,
+      courseId: id,
+    };
+
+    await CourseRequest.create(requestCourse);
 
     return {
       status: 200,

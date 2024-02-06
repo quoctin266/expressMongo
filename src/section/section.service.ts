@@ -72,14 +72,4 @@ export default class SectionService {
       data: res,
     };
   };
-
-  //   static getDetail = async (id: string) => {
-  //     let res = await Category.findById(id);
-
-  //     return {
-  //       status: 200,
-  //       message: "Get category detail successfully",
-  //       data: res,
-  //     };
-  //   };
 }

@@ -16,6 +16,7 @@ import questionRoutes from "./src/question/question.route";
 import attemptRoutes from "./src/quizAttempt/quizAttempt.route";
 import feedbackRoutes from "./src/feedback/feedback.route";
 import sectionRoutes from "./src/section/section.route";
+import courseRequestRoutes from "./src/courseRequest/courseRequest.route";
 
 import { checkUserJWT } from "./src/middleware/jwt.service";
 
@@ -35,6 +36,7 @@ router.use("/questions", questionRoutes);
 router.use("/attempts", attemptRoutes);
 router.use("/feedbacks", feedbackRoutes);
 router.use("/sections", sectionRoutes);
+router.use("/course-requests", courseRequestRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);
