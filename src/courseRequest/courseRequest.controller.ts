@@ -18,4 +18,15 @@ export default class CourseRequestController {
 
     res.status(result.status).json(result);
   }
+
+  static async processRequest(req: Request, res: Response) {
+    const { id } = req.params;
+
+    let result = await CourseRequestService.updateStatus(
+      id,
+      req.body.status as string
+    );
+
+    res.status(result.status).json(result);
+  }
 }

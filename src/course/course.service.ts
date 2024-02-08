@@ -36,6 +36,14 @@ export default class CourseService {
       image: res.data,
     });
 
+    let requestCourse = {
+      type: "Create Course",
+      userId: (req as any).user.id,
+      courseId: result.id,
+    };
+
+    await CourseRequest.create(requestCourse);
+
     return {
       status: 201,
       message: "Create new course successfully",
@@ -54,6 +62,7 @@ export default class CourseService {
     if (course && course._id.toString() !== id)
       throw new AppError("Course title already exist", 409);
 
+    const currentCourse = await Course.findById(id).exec();
     let res = null;
     if (req.files && Object.keys(req.files).length !== 0) {
       res = await FileService.uploadFileAWS(
@@ -61,24 +70,27 @@ export default class CourseService {
         req.files.file as UploadedFile
       );
 
-      const currentCourse = await Course.findById(id).exec();
       await FileService.removeFileAWS(currentCourse?.image?.key as string);
     }
 
-    const image = res?.data ? res.data : course?.image;
+    const image = res?.data ? res.data : currentCourse?.image;
     let updateResult = await Course.findByIdAndUpdate(id, {
       ...updateCourseDto,
       image,
       status: "pending",
     });
 
-    let requestCourse = {
-      type: "Edit Course",
-      userId: (req as any).user.id,
-      courseId: id,
-    };
+    // create new request if no course request is active
+    let existRequest = await CourseRequest.exists({ courseId: id, status: 1 });
 
-    await CourseRequest.create(requestCourse);
+    if (!existRequest) {
+      let requestCourse = {
+        type: "Edit Course",
+        userId: (req as any).user.id,
+        courseId: id,
+      };
+      await CourseRequest.create(requestCourse);
+    }
 
     return {
       status: 200,

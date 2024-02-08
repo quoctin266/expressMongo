@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get("/", errorCatching(CourseRequestController.getCourseRequests));
 
+router.patch("/:id", errorCatching(CourseRequestController.processRequest));
+
 export default router;

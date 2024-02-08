@@ -8,4 +8,6 @@ export class FilterCourseRequestDto {
   sortDescending: boolean;
 
   searchQuery: string;
+
+  resultQuery: string;
 }

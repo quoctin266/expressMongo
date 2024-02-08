@@ -1,7 +1,6 @@
 import moment from "moment";
 import Category from "../category/schema/category.schema";
 import Course from "../course/schema/course.schema";
-import AppError from "../custom/AppError";
 import QuizService from "../quiz/quiz.service";
 import ReadingService from "../reading/reading.service";
 import SectionService from "../section/section.service";
@@ -28,8 +27,14 @@ export default class CourseRequestService {
     page: number,
     limit: number
   ) => {
-    let { typeQuery, searchQuery, sortBy, sortDescending, ...filterCourse } =
-      filter;
+    let {
+      typeQuery,
+      searchQuery,
+      resultQuery,
+      sortBy,
+      sortDescending,
+      ...filterCourse
+    } = filter;
 
     sortDescending = parseBoolean(sortDescending);
 
@@ -45,6 +50,7 @@ export default class CourseRequestService {
       await CourseRequest.find({
         userId: { $in: userIdsList },
         type: new RegExp(typeQuery, "i"),
+        result: new RegExp(resultQuery, "i"),
         ...filterCourse,
       })
     ).length;
@@ -53,6 +59,7 @@ export default class CourseRequestService {
     let res = await CourseRequest.find({
       userId: { $in: userIdsList },
       type: new RegExp(typeQuery, "i"),
+      result: new RegExp(resultQuery, "i"),
       ...filterCourse,
     })
       .skip(skip)
@@ -102,14 +109,21 @@ export default class CourseRequestService {
 
         delete courseData.categoryId;
 
-        let date = moment(request.createdAt).format("ddd MMM DD YYYY HH:mm:ss");
-        const { createdAt, userId, courseId, ...data } = request.toObject();
+        let createTime = moment(request.createdAt).format(
+          "ddd MMM DD YYYY HH:mm:ss"
+        );
+        let updateTime = moment(request.updatedAt).format(
+          "ddd MMM DD YYYY HH:mm:ss"
+        );
+        const { createdAt, updatedAt, userId, courseId, ...data } =
+          request.toObject();
 
         return {
           index: index + 1,
           id: request._id,
           username: user?.username,
-          createdAt: date,
+          createdAt: createTime,
+          updatedAt: updateTime,
           ...data,
           course: courseData,
         };
@@ -129,14 +143,20 @@ export default class CourseRequestService {
     };
   };
 
-  static updateStatus = async (requestId: string) => {
+  static updateStatus = async (requestId: string, status: string) => {
+    let courseId = (await CourseRequest.findById(requestId))?.courseId;
+
+    // approve or reject course
+    await Course.findByIdAndUpdate(courseId, { status });
+
     let res = await CourseRequest.findByIdAndUpdate(requestId, {
       status: 0,
+      result: status,
     });
 
     return {
       status: 200,
-      message: "Update request status successfully",
+      message: "Process request successfully",
       data: res,
     };
   };
