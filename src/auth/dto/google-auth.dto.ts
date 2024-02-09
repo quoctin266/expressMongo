@@ -6,4 +6,6 @@ export class GoogleAuthDto {
   firstName: string;
 
   lastName: string;
+
+  image: string;
 }

@@ -59,7 +59,7 @@ export default class CourseService {
     const { title } = updateCourseDto;
 
     let course = await Course.findOne({ title }).exec();
-    if (course && course._id.toString() !== id)
+    if (course && course.id !== id)
       throw new AppError("Course title already exist", 409);
 
     const currentCourse = await Course.findById(id).exec();

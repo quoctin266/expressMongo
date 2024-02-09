@@ -90,19 +90,21 @@ export default class AuthService {
     //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
     // });
 
+    const imageUrl = (await User.findById(payload.id))?.image?.url;
+
     return {
       status: 200,
       message: "Login successfully",
       data: {
         accessToken,
         refreshToken,
-        userCredentials: payload,
+        userCredentials: { ...payload, imageUrl },
       },
     };
   };
 
   static googleAuth = async (googleAuthDto: GoogleAuthDto, res: Response) => {
-    const { email, username, firstName, lastName } = googleAuthDto;
+    const { email, username, firstName, lastName, image } = googleAuthDto;
 
     let user = await User.findOne({ email }).exec();
 
@@ -117,6 +119,10 @@ export default class AuthService {
     if (!user) {
       let result = await User.create({
         ...googleAuthDto,
+        image: {
+          url: image,
+          key: image,
+        },
         googleAuth: true,
         status: 1,
       });
@@ -153,13 +159,15 @@ export default class AuthService {
     //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
     // });
 
+    const imageUrl = (await User.findById(payload.id))?.image?.url;
+
     return {
       status: 200,
       message: "Login successfully",
       data: {
         accessToken,
         refreshToken,
-        userCredentials: payload,
+        userCredentials: { ...payload, imageUrl },
       },
     };
   };

@@ -20,7 +20,11 @@ export default class UserController {
 
   static async update(req: Request, res: Response) {
     const { id } = req.params;
-    let result = await UserService.updateUser(id, req.body as UpdateUserDto);
+    let result = await UserService.updateUser(
+      id,
+      req.body as UpdateUserDto,
+      req
+    );
 
     res.status(result.status).json(result);
   }

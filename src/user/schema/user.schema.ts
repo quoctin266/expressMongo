@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     email: String,
     phone: String,
     dob: Date,
+    image: { url: String, key: String },
     status: { type: Number, default: 0 },
     role: { type: Number, default: 1 },
     otp: { type: Number, default: 999999 },

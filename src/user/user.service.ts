@@ -4,6 +4,9 @@ import bcrypt, { compare } from "bcryptjs";
 import AppError from "../custom/AppError";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserFilterDto } from "./dto/user-filter.dto";
+import { Request } from "express";
+import FileService from "../file/file.service";
+import { UploadedFile } from "express-fileupload";
 
 export default class UserService {
   static hashPassword = async (password: string) => {
@@ -52,13 +55,41 @@ export default class UserService {
     };
   };
 
-  static updateUser = async (id: string, updateUserDto: UpdateUserDto) => {
-    let res = await User.findByIdAndUpdate(id, { ...updateUserDto });
+  static updateUser = async (
+    id: string,
+    updateUserDto: UpdateUserDto,
+    req: Request
+  ) => {
+    const { username } = updateUserDto;
+
+    let user = await User.findOne({ username }).exec();
+    if (user && user.id !== id)
+      throw new AppError("Username already exist", 409);
+
+    const currentUser = await User.findById(id).exec();
+    let res = null;
+    if (req.files && Object.keys(req.files).length !== 0) {
+      res = await FileService.uploadFileAWS(
+        req,
+        req.files.file as UploadedFile
+      );
+
+      if (currentUser?.image?.key)
+        await FileService.removeFileAWS(currentUser?.image?.key as string);
+    }
+
+    const image = res?.data ? res.data : currentUser?.image;
+    let updateResult = await User.findByIdAndUpdate(id, {
+      ...updateUserDto,
+      image,
+    });
+
+    const imageUrl = image?.url;
 
     return {
       status: 200,
       message: "Update user successfully",
-      data: res,
+      data: { ...updateResult?.toObject(), imageUrl },
     };
   };
 
@@ -87,6 +118,17 @@ export default class UserService {
       .skip(skip)
       .limit(defaultLimit);
 
+    let userList = res.map((user) => {
+      const imageUrl = user.image?.url;
+
+      const { image, ...rest } = user.toObject();
+
+      return {
+        ...rest,
+        imageUrl,
+      };
+    });
+
     return {
       status: 200,
       message: "Get user list successfully",
@@ -95,7 +137,7 @@ export default class UserService {
         pageSize: defaultLimit,
         totalPages,
         resultCount,
-        items: res,
+        items: userList,
       },
     };
   };
