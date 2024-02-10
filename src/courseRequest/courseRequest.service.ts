@@ -39,7 +39,8 @@ export default class CourseRequestService {
     sortDescending = parseBoolean(sortDescending);
 
     const defaultLimit = limit ? limit : 10;
-    const skip = ((page ? page : 1) - 1) * defaultLimit;
+    const defaultPage = page ? page : 1;
+    const skip = (defaultPage - 1) * defaultLimit;
 
     const userIdsList = await User.find({
       username: new RegExp(searchQuery, "i"),
@@ -119,7 +120,7 @@ export default class CourseRequestService {
           request.toObject();
 
         return {
-          index: index + 1,
+          index: index + 1 + (defaultPage - 1) * defaultLimit,
           id: request._id,
           username: user?.username,
           createdAt: createTime,
@@ -134,7 +135,7 @@ export default class CourseRequestService {
       status: 200,
       message: "Get course requests successfully",
       data: {
-        pageIndex: page ? page : 1,
+        pageIndex: defaultPage,
         pageSize: defaultLimit,
         totalPages,
         resultCount,

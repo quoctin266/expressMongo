@@ -211,13 +211,15 @@ export default class AuthService {
     //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
     // });
 
+    const imageUrl = (await User.findById(payload.id))?.image?.url;
+
     return {
       status: 200,
       message: "Get new token successfully",
       data: {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        userCredentials: payload,
+        userCredentials: { ...payload, imageUrl },
       },
     };
   };
