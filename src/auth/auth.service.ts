@@ -90,7 +90,10 @@ export default class AuthService {
     //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
     // });
 
-    const imageUrl = (await User.findById(payload.id))?.image?.url;
+    const user = await User.findById(payload.id);
+    const imageUrl = user?.image?.url;
+    const description = user?.description;
+    const biography = user?.biography;
 
     return {
       status: 200,
@@ -98,7 +101,7 @@ export default class AuthService {
       data: {
         accessToken,
         refreshToken,
-        userCredentials: { ...payload, imageUrl },
+        userCredentials: { ...payload, imageUrl, description, biography },
       },
     };
   };
@@ -159,7 +162,10 @@ export default class AuthService {
     //   maxAge: ms(process.env.JWT_REFRESH_EXPIRE as string),
     // });
 
-    const imageUrl = (await User.findById(payload.id))?.image?.url;
+    const currentUser = await User.findById(payload.id);
+    const imageUrl = currentUser?.image?.url;
+    const description = currentUser?.description;
+    const biography = currentUser?.biography;
 
     return {
       status: 200,
@@ -167,7 +173,7 @@ export default class AuthService {
       data: {
         accessToken,
         refreshToken,
-        userCredentials: { ...payload, imageUrl },
+        userCredentials: { ...payload, imageUrl, description, biography },
       },
     };
   };

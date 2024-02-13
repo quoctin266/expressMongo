@@ -7,6 +7,9 @@ import { UserFilterDto } from "./dto/user-filter.dto";
 import { Request } from "express";
 import FileService from "../file/file.service";
 import { UploadedFile } from "express-fileupload";
+import Course from "../course/schema/course.schema";
+import CourseService from "../course/course.service";
+import Category from "../category/schema/category.schema";
 
 export default class UserService {
   static hashPassword = async (password: string) => {
@@ -46,12 +49,40 @@ export default class UserService {
   };
 
   static getDetail = async (id: string) => {
-    let res = await User.findById(id);
+    let user = await User.findById(id);
+    if (!user) throw new AppError("User not found", 404);
+
+    let userCourses = await Course.find({
+      creatorId: id,
+      status: "approved",
+    }).select("+createdAt");
+
+    let studentCount = 0;
+    let dataCourses = await Promise.all(
+      userCourses.map(async (course) => {
+        studentCount += course.students?.length as number;
+
+        const category = await Category.findById(course.categoryId);
+        const imageUrl = course.image?.url;
+
+        const { image, categoryId, ...data } = course.toObject();
+
+        return {
+          ...data,
+          imageUrl,
+          category: category?.name,
+        };
+      })
+    );
+
+    const imageUrl = user.image?.url;
+
+    const { image, ...data } = user.toObject();
 
     return {
       status: 200,
       message: "Get user detail successfully",
-      data: res,
+      data: { ...data, imageUrl, studentCount, dataCourses },
     };
   };
 

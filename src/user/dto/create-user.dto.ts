@@ -18,4 +18,8 @@ export class CreateUserDto {
   status: number;
 
   role: number;
+
+  description: String;
+
+  biography: String;
 }
