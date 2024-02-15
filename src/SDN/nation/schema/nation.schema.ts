@@ -5,6 +5,7 @@ const nationSchema = new mongoose.Schema(
   {
     name: String,
     description: String,
+    isDeleted: { type: Boolean, select: false, default: false },
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },

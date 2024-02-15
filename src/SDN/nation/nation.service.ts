@@ -5,7 +5,7 @@ import Nation from "./schema/nation.schema";
 
 export default class NationService {
   static gatNationsList = async () => {
-    let result = await Nation.find();
+    let result = await Nation.find({ isDeleted: false });
 
     return {
       status: 200,
@@ -62,7 +62,7 @@ export default class NationService {
     let nation = await Nation.findById(id).exec();
     if (!nation) throw new AppError("Nation not found", 404);
 
-    let result = await Nation.findByIdAndDelete(id);
+    let result = await Nation.findByIdAndUpdate(id, { isDeleted: true });
 
     return {
       status: 200,

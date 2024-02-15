@@ -7,6 +7,7 @@ require("dotenv").config();
 const nonSecurePaths = [
   { path: "/players", method: "GET" },
   { path: "/nations", method: "GET" },
+  { path: "/comments", method: "GET" },
 
   { path: "/auth/login", method: "POST" },
   { path: "/auth/register", method: "POST" },

@@ -13,7 +13,9 @@ export default class PlayerController {
   }
 
   static async getList(req: Request, res: Response) {
-    let result = await PlayerService.getPlayersList();
+    let { name } = req.query;
+
+    let result = await PlayerService.getPlayersList(name as string);
 
     res.status(result.status).json(result);
   }

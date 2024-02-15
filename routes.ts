@@ -2,6 +2,7 @@ import express from "express";
 
 import nationRoutes from "./src/SDN/nation/nation.route";
 import playerRoutes from "./src/SDN/player/player.route";
+import commentRoutes from "./src/SDN/comment/comment.route";
 
 import userRoutes from "./src/user/user.route";
 import authRoutes from "./src/auth/auth.route";
@@ -42,5 +43,6 @@ router.use("/instructor-requests", instructorRequestRoutes);
 
 router.use("/nations", nationRoutes);
 router.use("/players", playerRoutes);
+router.use("/comments", commentRoutes);
 
 export default router;

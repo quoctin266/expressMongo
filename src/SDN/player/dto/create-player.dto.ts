@@ -5,4 +5,5 @@ export interface CreatePlayerDTO {
   img: string;
   goals: number;
   nation: string;
+  isCaptain: boolean;
 }

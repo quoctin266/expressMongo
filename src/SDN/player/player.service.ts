@@ -6,8 +6,13 @@ import Player from "./schema/player.schema";
 require("dotenv").config();
 
 export default class PlayerService {
-  static getPlayersList = async () => {
-    let result = await Player.find().populate("nation").exec();
+  static getPlayersList = async (name: string) => {
+    let result = await Player.find({
+      name: new RegExp(name, "i"),
+      isDeleted: false,
+    })
+      .populate("nation")
+      .exec();
 
     let playerList = result.map((player) => {
       const imageUrl = FileService.createFileLink(player.img as string);
@@ -60,7 +65,7 @@ export default class PlayerService {
     if (!player) throw new AppError("Player not found", 404);
 
     await FileService.removeFile(player.img as string);
-    let result = await Player.findByIdAndDelete(id);
+    let result = await Player.findByIdAndUpdate(id, { isDeleted: true });
 
     return {
       status: 200,
