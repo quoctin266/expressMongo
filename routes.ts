@@ -21,11 +21,11 @@ import courseRequestRoutes from "./src/courseRequest/courseRequest.route";
 import instructorRequestRoutes from "./src/instructorRequest/instructorRequest.route";
 
 import { checkUserJWT } from "./src/middleware/jwt.service";
-import { checkRoleMiddleware } from "./src/middleware/checkRole";
+// import { checkRoleMiddleware } from "./src/middleware/checkRole";
 
 const router = express.Router();
 
-router.all("*", checkUserJWT, checkRoleMiddleware);
+router.all("*", checkUserJWT);
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
 router.use("/files", fileRoutes);
