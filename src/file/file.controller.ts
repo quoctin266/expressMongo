@@ -9,7 +9,7 @@ export default class FileController {
       throw new AppError("No files were uploaded", 400);
     }
 
-    let result = await FileService.uploadFileAWS(
+    let result = await FileService.uploadFile(
       req,
       req.files.file as UploadedFile
     );
