@@ -1,5 +1,6 @@
 import AppError from "../../custom/AppError";
 import FileService from "../../file/file.service";
+import Comment from "../comment/schema/comment.schema";
 import { CreatePlayerDTO } from "./dto/create-player.dto";
 import { UpdatePlayerDTO } from "./dto/update-player.dto";
 import Player from "./schema/player.schema";
@@ -14,16 +15,23 @@ export default class PlayerService {
       .populate("nation")
       .exec();
 
-    let playerList = result.map((player) => {
-      const imageUrl = FileService.createFileLink(player.img as string);
+    let playerList = await Promise.all(
+      result.map(async (player) => {
+        const imageUrl = FileService.createFileLink(player.img as string);
+        const comments = await Comment.find({ player: player.id }).populate(
+          "author",
+          "username"
+        );
 
-      const { img, ...rest } = player.toObject();
+        const { img, ...rest } = player.toObject();
 
-      return {
-        ...rest,
-        imageUrl,
-      };
-    });
+        return {
+          ...rest,
+          imageUrl,
+          comments,
+        };
+      })
+    );
 
     return {
       status: 200,

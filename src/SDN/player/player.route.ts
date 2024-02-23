@@ -24,11 +24,11 @@ const validateCreatePlayer = {
     notEmpty: true,
     errorMessage: "Player's image must not be empty",
   },
-  goals: {
-    notEmpty: {
-      errorMessage: "Player's goals must not be empty",
-    },
-  },
+  // goals: {
+  //   notEmpty: {
+  //     errorMessage: "Player's goals must not be empty",
+  //   },
+  // },
   nation: {
     notEmpty: true,
     errorMessage: "Player's nation must not be empty",

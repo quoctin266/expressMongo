@@ -1,14 +1,15 @@
 import AppError from "../../custom/AppError";
+import { IFilterComment } from "./comment.controller";
 import { CreateCommentDTO } from "./dto/create-comment.dto";
 import { UpdateCommentDTO } from "./dto/update-comment.dto";
 import Comment from "./schema/comment.schema";
 
 export default class CommentService {
-  static getCommentsList = async (player: string) => {
-    let result = await Comment.find({ isDeleted: false, player }).populate(
-      "author",
-      "username"
-    );
+  static getCommentsList = async (filterObj: IFilterComment) => {
+    let result = await Comment.find({
+      isDeleted: false,
+      ...filterObj,
+    }).populate("author", "username");
 
     return {
       status: 200,

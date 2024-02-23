@@ -117,6 +117,9 @@ export default class AuthService {
       email: "",
       role: 1,
       status: 1,
+      dob: "",
+      phone: "",
+      address: "",
       googleAuth: true,
     };
     if (!user) {
@@ -141,6 +144,9 @@ export default class AuthService {
       payload.firstName = user.firstName as string;
       payload.lastName = user.lastName as string;
       payload.role = user.role;
+      payload.dob = user.dob?.toISOString();
+      payload.phone = user.phone as string;
+      payload.address = user.address as string;
     }
 
     const accessToken = createJWT(

@@ -3,10 +3,17 @@ import CommentService from "./comment.service";
 import { CreateCommentDTO } from "./dto/create-comment.dto";
 import { UpdateCommentDTO } from "./dto/update-comment.dto";
 
+export interface IFilterComment {
+  player: string;
+
+  author: string;
+}
+
 export default class CommentController {
   static async getList(req: Request, res: Response) {
-    let { player } = req.query;
-    let result = await CommentService.getCommentsList(player as string);
+    let result = await CommentService.getCommentsList(
+      req.query as unknown as IFilterComment
+    );
 
     res.status(result.status).json(result);
   }

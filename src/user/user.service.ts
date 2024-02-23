@@ -10,6 +10,7 @@ import { UploadedFile } from "express-fileupload";
 import Course from "../course/schema/course.schema";
 import CourseService from "../course/course.service";
 import Category from "../category/schema/category.schema";
+import { IUser } from "./user.interface";
 
 export default class UserService {
   static hashPassword = async (password: string) => {
@@ -91,7 +92,11 @@ export default class UserService {
     updateUserDto: UpdateUserDto,
     req: Request
   ) => {
-    const { username } = updateUserDto;
+    const { username, status } = updateUserDto;
+
+    const userToken: IUser = (req as any).user;
+    if (userToken.id !== id && typeof status !== "boolean" && !status)
+      throw new AppError("Not Allow", 403);
 
     let user = await User.findOne({ username }).exec();
     if (user && user.id !== id)

@@ -10,6 +10,8 @@ const userAllowRoutes = [
   { path: "/comments", method: "PATCH" },
   { path: "/comments", method: "DELETE" },
 
+  { path: "/users", method: "PATCH" },
+
   { path: "/auth/login", method: "POST" },
   { path: "/auth/register", method: "POST" },
   { path: "/auth/google-login", method: "POST" },
