@@ -31,7 +31,13 @@ app.use(
 );
 
 // config file option
-app.use(fileUpload({ createParentPath: true }));
+app.use(
+  fileUpload({
+    createParentPath: true,
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 //config view engine
 app.set("views", "./src/views");

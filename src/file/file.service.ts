@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import path, { join } from "path";
 import fs from "fs";
+import fsPromises from "fs/promises";
 import { existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import AppError from "../custom/AppError";
@@ -32,11 +33,11 @@ export default class FileService {
     return fileName;
   };
 
-  static createPath = (req: Request, file: UploadedFile) => {
+  static createPath = (req: Request, file?: UploadedFile) => {
     const folderType = req.headers?.folder_type ?? "others";
     const folderName = req.headers?.folder_name ?? "default";
 
-    const fileName = this.createFileName(file);
+    const fileName = file ? this.createFileName(file) : "";
 
     const uploadPath = join(
       this.getRootPath(),
@@ -81,8 +82,8 @@ export default class FileService {
         422
       );
 
-    if (file.size > 1024 * 1024 * 30)
-      throw new AppError("Max size allowed is 30mb", 400);
+    if (file.size > 1024 * 1024 * 50)
+      throw new AppError("Max size allowed is 50mb", 400);
 
     const { uploadPath, fileName } = this.createPath(req, file);
 
@@ -96,6 +97,56 @@ export default class FileService {
         // originalName: file.name,
         error: null,
       },
+    };
+  };
+
+  static uploadFileChunk = async (
+    fileName: string,
+    totalChunks: number,
+    chunk: UploadedFile,
+    req: Request
+  ) => {
+    // move chunk to tmp folder
+    const saveChunkPath = join(
+      process.cwd(),
+      `public/${fileName}` + chunk.tempFilePath
+    );
+    await chunk.mv(saveChunkPath);
+
+    // find all file names in tmp folder
+    const tmpPath = join(process.cwd(), `public/${fileName}/tmp`);
+    const fileNames = await fsPromises.readdir(tmpPath);
+
+    if (fileNames.length === +totalChunks) {
+      // find and read each file to an array of buffer
+      const fileBuffers = await Promise.all(
+        fileNames.map(async (name) => {
+          const filePath = path.join(tmpPath, name);
+          return fsPromises.readFile(filePath);
+        })
+      );
+
+      const { uploadPath } = this.createPath(req);
+      const filePath = uploadPath + `${new Date().getTime()}_${fileName}`;
+      for (const buffer of fileBuffers) {
+        if (!fs.existsSync(uploadPath)) {
+          // If not, create the directory
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+
+        await fsPromises.appendFile(filePath, buffer);
+      }
+
+      // remove tmp folder after finish uploading and appending
+      fsPromises.rm(join(process.cwd(), `public/${fileName}`), {
+        recursive: true,
+      });
+    }
+
+    return {
+      status: 201,
+      message: "Upload succesfully",
+      data: null,
     };
   };
 
