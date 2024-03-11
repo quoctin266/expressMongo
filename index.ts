@@ -31,11 +31,12 @@ app.use(
 );
 
 // config file option
+// enable temp file will make upload to aws s3 become 0 Byte
 app.use(
   fileUpload({
     createParentPath: true,
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
+    // useTempFiles: true,
+    // tempFileDir: "/tmp/",
   })
 );
 
