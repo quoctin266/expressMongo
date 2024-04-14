@@ -224,6 +224,8 @@ export default class AuthService {
     // });
 
     const imageUrl = (await User.findById(payload.id))?.image?.url;
+    const description = (await User.findById(payload.id))?.description;
+    const biography = (await User.findById(payload.id))?.biography;
 
     return {
       status: 200,
@@ -231,7 +233,7 @@ export default class AuthService {
       data: {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        userCredentials: { ...payload, imageUrl },
+        userCredentials: { ...payload, imageUrl, description, biography },
       },
     };
   };
