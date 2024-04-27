@@ -47,11 +47,12 @@ export default class PaymentController {
   }
 
   static async checkOut(req: Request, res: Response) {
-    const { orderId, totalPrice } = req.query as any;
+    const { orderId, totalPrice, mobile } = req.query as any;
 
     await PaymentService.checkOut(
       orderId as string,
       +totalPrice as number,
+      mobile as boolean,
       res
     );
   }

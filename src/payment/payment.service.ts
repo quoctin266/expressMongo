@@ -143,6 +143,7 @@ export default class PaymentService {
   static checkOut = async (
     orderId: string,
     totalPrice: number,
+    mobile: boolean,
     res: Response
   ) => {
     try {
@@ -152,8 +153,12 @@ export default class PaymentService {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: `${frontendDomain}/payment/invoice?orderId=${orderId}`,
-          cancel_url: `${frontendDomain}/payment-cancel`,
+          return_url: mobile
+            ? "http://localhost:3000/success"
+            : `${frontendDomain}/payment/invoice?orderId=${orderId}`,
+          cancel_url: mobile
+            ? "http://localhost:3000/fail"
+            : `${frontendDomain}/payment-cancel`,
         },
         transactions: [
           {
