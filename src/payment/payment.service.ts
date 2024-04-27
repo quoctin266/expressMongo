@@ -157,7 +157,7 @@ export default class PaymentService {
             ? `${frontendDomain}?status=true&orderId=${orderId}`
             : `${frontendDomain}/payment/invoice?orderId=${orderId}`,
           cancel_url: mobile
-            ? `${frontendDomain}?status=false`
+            ? `${frontendDomain}?status=false&orderId=${orderId}`
             : `${frontendDomain}/payment-cancel`,
         },
         transactions: [
