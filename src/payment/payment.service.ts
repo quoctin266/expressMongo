@@ -154,10 +154,10 @@ export default class PaymentService {
         },
         redirect_urls: {
           return_url: mobile
-            ? "http://localhost:3000/success"
+            ? `${frontendDomain}?status=true&orderId=${orderId}`
             : `${frontendDomain}/payment/invoice?orderId=${orderId}`,
           cancel_url: mobile
-            ? "http://localhost:3000/fail"
+            ? `${frontendDomain}?status=false`
             : `${frontendDomain}/payment-cancel`,
         },
         transactions: [
