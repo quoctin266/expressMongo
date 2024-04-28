@@ -92,7 +92,7 @@ export default class UserService {
     updateUserDto: UpdateUserDto,
     req: Request
   ) => {
-    const { username, status } = updateUserDto;
+    const { username, status, file } = updateUserDto;
 
     const userToken: IUser = (req as any).user;
     if (userToken.id !== id && typeof status !== "boolean" && !status)
@@ -105,11 +105,17 @@ export default class UserService {
     const currentUser = await User.findById(id).exec();
     let res = null;
     if (req.files && Object.keys(req.files).length !== 0) {
-      console.log(req.files.file);
       res = await FileService.uploadFileAWS(
         req,
         req.files.file as UploadedFile
       );
+
+      if (currentUser?.image?.key)
+        await FileService.removeFileAWS(currentUser?.image?.key as string);
+    }
+
+    if (file) {
+      res = await FileService.uploadFileAWS(req, file);
 
       if (currentUser?.image?.key)
         await FileService.removeFileAWS(currentUser?.image?.key as string);

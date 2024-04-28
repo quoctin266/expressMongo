@@ -7,6 +7,7 @@ import { existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import AppError from "../custom/AppError";
 import AWS from "aws-sdk";
+import { IMobileFile } from "../user/dto/update-user.dto";
 require("dotenv").config();
 
 const BUCKET = process.env.BUCKET as string;
@@ -24,7 +25,7 @@ export default class FileService {
     return process.cwd();
   };
 
-  static createFileName = (file: UploadedFile) => {
+  static createFileName = (file: UploadedFile | IMobileFile) => {
     const extName = path.extname(file.name);
     const baseName = path.basename(file.name, extName);
 
@@ -190,7 +191,10 @@ export default class FileService {
   };
 
   // AWS service
-  static uploadFileAWS = async (req: Request, file: UploadedFile) => {
+  static uploadFileAWS = async (
+    req: Request,
+    file: UploadedFile | IMobileFile
+  ) => {
     if (!acceptTypes.includes(file.mimetype))
       throw new AppError(
         "Invalid file type. Expected type: image/jpeg|image/png|text/plain|video/mp4|video/webm",
@@ -204,7 +208,12 @@ export default class FileService {
     const folderName = req.headers?.folder_name ?? "default";
 
     const fileName = this.createFileName(file);
-    const fileContent = Buffer.from(file.data);
+
+    let fileContent = null;
+
+    if ((file as IMobileFile).isMobile)
+      fileContent = Buffer.from(file.data as string, "base64");
+    else fileContent = Buffer.from(file.data);
 
     const s3 = new AWS.S3();
     let res = await s3
