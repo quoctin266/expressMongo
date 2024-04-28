@@ -209,11 +209,7 @@ export default class FileService {
 
     const fileName = this.createFileName(file);
 
-    let fileContent = null;
-
-    if ((file as IMobileFile).isMobile)
-      fileContent = Buffer.from(file.data as string, "base64");
-    else fileContent = Buffer.from(file.data);
+    const fileContent = Buffer.from(file.data);
 
     const s3 = new AWS.S3();
     let res = await s3
@@ -221,6 +217,8 @@ export default class FileService {
         Body: fileContent,
         Bucket: BUCKET,
         Key: `${folderType}/${folderName}/${fileName}`,
+        ContentType: (file as IMobileFile).isMobile ? file.mimetype : undefined,
+        ContentEncoding: (file as IMobileFile).isMobile ? "base64" : undefined,
       })
       .promise();
 
