@@ -195,6 +195,7 @@ export default class FileService {
     req: Request,
     file: UploadedFile | IMobileFile
   ) => {
+    console.log(file.data);
     if (!acceptTypes.includes(file.mimetype))
       throw new AppError(
         "Invalid file type. Expected type: image/jpeg|image/png|text/plain|video/mp4|video/webm",
@@ -209,7 +210,10 @@ export default class FileService {
 
     const fileName = this.createFileName(file);
 
-    const fileContent = Buffer.from(file.data);
+    let fileContent = null;
+    if ((file as IMobileFile).isMobile) {
+      fileContent = Buffer.from(file.data as string, "base64");
+    } else fileContent = Buffer.from(file.data);
 
     const s3 = new AWS.S3();
     let res = await s3
