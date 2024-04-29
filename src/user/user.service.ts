@@ -105,6 +105,7 @@ export default class UserService {
     const currentUser = await User.findById(id).exec();
     let res = null;
     if (req.files && Object.keys(req.files).length !== 0) {
+      console.log("upload desktop: ", req.files.file);
       res = await FileService.uploadFileAWS(
         req,
         req.files.file as UploadedFile
@@ -115,6 +116,7 @@ export default class UserService {
     }
 
     if (file) {
+      console.log("upload mobile: ", file);
       res = await FileService.uploadFileAWS(req, file);
 
       if (currentUser?.image?.key)
