@@ -115,7 +115,7 @@ export default class UserService {
         await FileService.removeFileAWS(currentUser?.image?.key as string);
     }
 
-    if (file) {
+    if (file?.isMobile) {
       console.log("upload mobile: ", file);
       res = await FileService.uploadFileAWS(req, file);
 
