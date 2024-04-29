@@ -124,17 +124,18 @@ export default class UserService {
     }
 
     const image = res?.data ? res.data : currentUser?.image;
-    let updateResult = await User.findByIdAndUpdate(id, {
+    await User.findByIdAndUpdate(id, {
       ...updateUserDto,
       image,
     });
 
+    const updatedUser = await User.findById(id).exec();
     const imageUrl = image?.url;
 
     return {
       status: 200,
       message: "Update user successfully",
-      data: { ...updateResult?.toObject(), imageUrl },
+      data: { ...updatedUser?.toObject(), imageUrl },
     };
   };
 
