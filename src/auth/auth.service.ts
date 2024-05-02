@@ -26,10 +26,10 @@ export default class AuthService {
     if (existUser) throw new AppError("Email already exist", 409);
 
     const hashPassword = await UserService.hashPassword(password);
-    registerUserDto.password = hashPassword;
+
     let result = await User.create({
       email,
-      password,
+      password: hashPassword,
       username,
       role,
       status: 0,
