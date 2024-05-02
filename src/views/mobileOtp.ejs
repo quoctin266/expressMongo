@@ -1,0 +1,45 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div
+      style="
+        width: 40%;
+        font-size: 1.1em;
+        border: 1px solid #e5e5e5;
+        border-radius: 15px;
+        padding: 2%;
+        margin: 0 auto;
+      "
+    >
+      <div style="margin: 6% 0">Hi <%= username %>,</div>
+      <div style="margin-bottom: 8%">
+        You must activate your account using the below otp. <br />
+        Enter the following otp:
+      </div>
+      <div
+        style="
+          margin-bottom: 7%;
+          padding: 10px 15px;
+          border-radius: 8px;
+          border: 1px solid #1d82ff;
+          background-color: aliceblue;
+          color: black;
+          font-weight: 600;
+          font-size: 18px;
+          width: 70px;
+          text-align: center;
+        "
+        disabled
+      >
+        <%= otp %>
+      </div>
+      <div style="margin-bottom: 5%">
+        Enter this otp in your app to active your account.
+      </div>
+    </div>
+  </body>
+</html>

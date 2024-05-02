@@ -75,10 +75,28 @@ export default class AuthController {
     res.status(result.status).json(result);
   }
 
+  static async checkOtpMobile(req: Request, res: Response) {
+    const { otp, email } = req.body;
+
+    let result = await AuthService.checkOtpMobile(email, otp as number);
+
+    res.status(result.status).json(result);
+  }
+
   static async resendOtp(req: Request, res: Response) {
     const { userId } = req.params;
 
     await AuthService.resendOtp(userId);
+
+    res.status(200).json({
+      status: 200,
+    });
+  }
+
+  static async resendOtpMobile(req: Request, res: Response) {
+    const { email } = req.body;
+
+    await AuthService.resendOtpMobile(email);
 
     res.status(200).json({
       status: 200,

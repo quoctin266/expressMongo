@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
     role: { type: Number, default: 1 },
     otp: { type: Number, default: 999999 },
     refreshToken: String,
+    isVerified: { type: Boolean, default: false },
     cart: [{ type: Schema.Types.ObjectId, ref: "course" }],
     purchasedCourses: [{ type: Schema.Types.ObjectId, ref: "course" }],
     googleAuth: { type: Boolean, default: false },

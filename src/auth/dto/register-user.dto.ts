@@ -6,4 +6,6 @@ export class RegisterUserDto {
   email: string;
 
   role: number;
+
+  mobile: boolean;
 }

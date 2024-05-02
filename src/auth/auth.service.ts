@@ -20,16 +20,23 @@ const frontendDomain =
 
 export default class AuthService {
   static registerNewUser = async (registerUserDto: RegisterUserDto) => {
-    const { email, password } = registerUserDto;
+    const { email, password, mobile, username, role } = registerUserDto;
 
     let existUser = await User.findOne({ email }).exec();
     if (existUser) throw new AppError("Email already exist", 409);
 
     const hashPassword = await UserService.hashPassword(password);
     registerUserDto.password = hashPassword;
-    let result = await User.create({ ...registerUserDto, status: 0 });
+    let result = await User.create({
+      email,
+      password,
+      username,
+      role,
+      status: 0,
+    });
 
-    await this.sendMailOtp(email);
+    if (mobile) await this.sendMailOtpMobile(email);
+    else await this.sendMailOtp(email);
 
     return {
       status: 200,
@@ -290,6 +297,22 @@ export default class AuthService {
     await sendMail(template, context, email, subject);
   };
 
+  static sendMailOtpMobile = async (email: string) => {
+    let user = await User.findOne({ email });
+    let otp = Math.floor(Math.random() * 899999 + 100000);
+
+    await User.findByIdAndUpdate(user?._id, { otp });
+
+    let template = "mobileOtp.ejs";
+    let subject = "Active your account";
+    let context = {
+      otp: otp,
+      username: user?.username,
+    };
+
+    await sendMail(template, context, email, subject);
+  };
+
   static resendOtp = async (userId: string) => {
     let user = await User.findById(userId);
     let otp = Math.floor(Math.random() * 899999 + 100000);
@@ -307,12 +330,42 @@ export default class AuthService {
     await sendMail(template, context, user?.email as string, subject);
   };
 
+  static resendOtpMobile = async (email: string) => {
+    let user = await User.findOne({ email });
+    let otp = Math.floor(Math.random() * 899999 + 100000);
+
+    await User.updateOne({ email }, { otp });
+
+    let template = "mobileOtp.ejs";
+    let subject = "Active your account";
+    let context = {
+      otp: otp,
+      username: user?.username,
+    };
+
+    await sendMail(template, context, user?.email as string, subject);
+  };
+
   static checkOtp = async (userId: string, otp: number) => {
     let user = await User.findById(userId);
 
     if (user?.otp !== +otp) throw new AppError("Invalid otp", 401);
 
     await User.findByIdAndUpdate(userId, { status: 1 });
+
+    return {
+      status: 200,
+      message: "Account verified",
+      data: null,
+    };
+  };
+
+  static checkOtpMobile = async (email: string, otp: number) => {
+    let user = await User.findOne({ email });
+
+    if (user?.otp !== +otp) throw new AppError("Invalid otp", 401);
+
+    await User.updateOne({ email }, { isVerified: true });
 
     return {
       status: 200,
