@@ -14,7 +14,7 @@ const nonSecurePaths = [
   { path: "/auth/google-login", method: "POST" },
   { path: "/auth/refresh", method: "POST" },
   { path: "/auth/check-otp", method: "POST" },
-  { path: "/auth/check-otp/mobile", method: "POST" },
+  { path: "/auth/check-otp-mobile", method: "POST" },
   { path: "/auth/resend-otp", method: "GET" },
   { path: "/auth/resend-otp/mobile", method: "POST" },
   { path: "/auth/forget-password", method: "POST" },

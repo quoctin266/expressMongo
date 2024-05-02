@@ -57,7 +57,7 @@ router.post("/reset-password", errorCatching(AuthController.changePW));
 
 router.post("/check-otp/:userId", errorCatching(AuthController.checkOtp));
 
-router.post("/check-otp/mobile", errorCatching(AuthController.checkOtpMobile));
+router.post("/check-otp-mobile", errorCatching(AuthController.checkOtpMobile));
 
 router.get("/resend-otp/:userId", errorCatching(AuthController.resendOtp));
 
