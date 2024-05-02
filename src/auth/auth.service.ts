@@ -73,7 +73,7 @@ export default class AuthService {
   };
 
   static loginUser = async (loginUserDto: LoginUserDto, res: Response) => {
-    const { email, password } = loginUserDto;
+    const { email, password, mobile } = loginUserDto;
     const payload = await this.validateUser(email, password);
 
     if (!payload) throw new AppError("Invalid email or password", 401);
@@ -101,6 +101,10 @@ export default class AuthService {
     const imageUrl = user?.image?.url;
     const description = user?.description;
     const biography = user?.biography;
+
+    if (mobile && !user?.isVerified) {
+      await this.sendMailOtpMobile(email);
+    }
 
     return {
       status: 200,
