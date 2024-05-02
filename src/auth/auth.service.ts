@@ -101,6 +101,7 @@ export default class AuthService {
     const imageUrl = user?.image?.url;
     const description = user?.description;
     const biography = user?.biography;
+    const isVerified = user?.isVerified;
 
     if (mobile && !user?.isVerified) {
       await this.sendMailOtpMobile(email);
@@ -112,7 +113,13 @@ export default class AuthService {
       data: {
         accessToken,
         refreshToken,
-        userCredentials: { ...payload, imageUrl, description, biography },
+        userCredentials: {
+          ...payload,
+          imageUrl,
+          description,
+          biography,
+          isVerified,
+        },
       },
     };
   };
