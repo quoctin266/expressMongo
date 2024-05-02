@@ -351,7 +351,7 @@ export default class AuthService {
 
     if (user?.otp !== +otp) throw new AppError("Invalid otp", 401);
 
-    await User.findByIdAndUpdate(userId, { status: 1 });
+    await User.findByIdAndUpdate(userId, { isVerified: true, status: 1 });
 
     return {
       status: 200,
