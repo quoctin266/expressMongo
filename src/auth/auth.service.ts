@@ -166,6 +166,7 @@ export default class AuthService {
       payload.dob = user.dob?.toISOString();
       payload.phone = user.phone as string;
       payload.address = user.address as string;
+      payload.googleAuth = user.googleAuth;
     }
 
     const accessToken = createJWT(
