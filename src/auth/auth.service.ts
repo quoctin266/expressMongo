@@ -144,11 +144,12 @@ export default class AuthService {
       let result = await User.create({
         ...googleAuthDto,
         image: {
-          url: image,
-          key: image,
+          url: image ?? "",
+          key: image ?? "",
         },
         googleAuth: true,
         status: 1,
+        isVerified: true,
       });
       payload.id = result.id;
       payload.email = email;
@@ -190,6 +191,7 @@ export default class AuthService {
     const imageUrl = currentUser?.image?.url;
     const description = currentUser?.description;
     const biography = currentUser?.biography;
+    const isVerified = currentUser?.isVerified;
 
     return {
       status: 200,
@@ -197,7 +199,13 @@ export default class AuthService {
       data: {
         accessToken,
         refreshToken,
-        userCredentials: { ...payload, imageUrl, description, biography },
+        userCredentials: {
+          ...payload,
+          imageUrl,
+          description,
+          biography,
+          isVerified,
+        },
       },
     };
   };
@@ -282,7 +290,14 @@ export default class AuthService {
       throw new AppError("Passwords do not match", 400);
 
     const hashPassword = await UserService.hashPassword(newPassword);
-    let res = await User.findByIdAndUpdate(id, { password: hashPassword });
+    let res = await User.findByIdAndUpdate(
+      id,
+      {
+        password: hashPassword,
+        googleAuth: false,
+      },
+      { new: true }
+    );
 
     return {
       status: 200,
