@@ -21,6 +21,20 @@ paypal.configure({
   client_secret: PAYPAL_SECRET_KEY as string,
 });
 
+interface ICourse {
+  title: string;
+
+  price: number;
+}
+
+interface IItem {
+  name: string;
+  price: string;
+  currency: string;
+  sku: string;
+  quantity: number;
+}
+
 export default class PaymentService {
   static addToCart = async (id: string, courses: string[]) => {
     let user = await User.findById(id).exec();
@@ -106,6 +120,12 @@ export default class PaymentService {
 
   static updateOrderStatus = async (id: string) => {
     let res = await Order.findByIdAndUpdate(id, { orderStatus: 1 });
+    let user = await User.findById(res?.userId);
+
+    const purchasedItems = res?.courseId.filter(
+      (id) => !user?.purchasedCourses.includes(id)
+    );
+
     // enroll student to course
     await Course.updateMany(
       { _id: { $in: res?.courseId } },
@@ -113,7 +133,7 @@ export default class PaymentService {
     );
 
     await User.findByIdAndUpdate(res?.userId, {
-      $push: { purchasedCourses: { $each: res?.courseId } },
+      $push: { purchasedCourses: { $each: purchasedItems } },
     });
 
     await this.sendMail(id);
@@ -146,6 +166,23 @@ export default class PaymentService {
     mobile: boolean,
     res: Response
   ) => {
+    const order = await Order.findById(orderId).populate<{
+      courseId: ICourse[];
+    }>("courseId");
+    let items: IItem[] = [];
+
+    if (order) {
+      items = order?.courseId.map((course, index) => {
+        return {
+          name: course.title,
+          price: course.price.toFixed(2),
+          currency: "USD",
+          sku: `00${index + 1}`,
+          quantity: 1,
+        };
+      });
+    }
+
     try {
       const create_payment_json = {
         intent: "sale",
@@ -163,13 +200,13 @@ export default class PaymentService {
         transactions: [
           {
             item_list: {
-              items: [],
+              items: items,
             },
             amount: {
               currency: "USD",
               total: totalPrice.toFixed(2),
             },
-            description: "Cursus's course",
+            description: "Cursus courses",
           },
         ],
       };
@@ -189,6 +226,53 @@ export default class PaymentService {
       });
     } catch (error: any) {
       console.log(error.message);
+    }
+  };
+
+  static processTransaction = async (
+    payerId: string,
+    paymentId: string,
+    price: number
+  ) => {
+    try {
+      const execute_payment_json = {
+        payer_id: payerId,
+        transactions: [
+          {
+            amount: {
+              currency: "USD",
+              total: price.toFixed(2),
+            },
+          },
+        ],
+      };
+
+      paypal.payment.execute(
+        paymentId,
+        execute_payment_json,
+        function (error, payment) {
+          if (error) {
+            console.log(error.response);
+            throw error;
+          } else {
+            console.log(JSON.stringify(payment));
+          }
+        }
+      );
+
+      return {
+        status: 200,
+        message: "Ok",
+        data: null,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        status: 500,
+        message: "Something went wrong",
+        data: null,
+      };
     }
   };
 

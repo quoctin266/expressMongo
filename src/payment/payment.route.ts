@@ -30,6 +30,8 @@ router.post("/checkout", errorCatching(PaymentController.confirmOrder));
 
 router.get("/checkout", errorCatching(PaymentController.checkOut));
 
+router.get("/transaction", errorCatching(PaymentController.processTransaction));
+
 router.patch("/orders/:id", errorCatching(PaymentController.updateOrderStatus));
 
 router.get("/mail/:orderId", errorCatching(PaymentController.sendMail));
