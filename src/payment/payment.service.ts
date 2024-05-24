@@ -145,21 +145,21 @@ export default class PaymentService {
 
     await this.sendMail(id);
 
-    const courses = await Course.find({ _id: { $in: res?.courseId } });
+    // const courses = await Course.find({ _id: { $in: res?.courseId } });
 
-    let payoutData: IBatchItem[] = [];
+    // let payoutData: IBatchItem[] = [];
 
-    for (const course of courses) {
-      const instructor = await User.findById(course.creatorId);
-      const amount = course.price * 0.6;
+    // for (const course of courses) {
+    //   const instructor = await User.findById(course.creatorId);
+    //   const amount = course.price * 0.6;
 
-      payoutData.push({
-        email: instructor?.email as string,
-        amount,
-      });
-    }
+    //   payoutData.push({
+    //     email: instructor?.email as string,
+    //     amount,
+    //   });
+    // }
 
-    this.processPayout(payoutData);
+    // this.processPayout(payoutData);
 
     return {
       status: 200,
