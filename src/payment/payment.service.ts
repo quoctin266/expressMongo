@@ -6,7 +6,14 @@ import Order from "./schema/order.schema";
 import paypal from "paypal-rest-sdk";
 import { Response } from "express";
 import { sendMail } from "../util/mail.config";
+import { v4 as uuidv4 } from "uuid";
 require("dotenv").config();
+
+interface IBatchItem {
+  email: string;
+
+  amount: number;
+}
 
 const frontendDomain =
   process.env.NODE_ENV === "development"
@@ -138,6 +145,22 @@ export default class PaymentService {
 
     await this.sendMail(id);
 
+    const courses = await Course.find({ _id: { $in: res?.courseId } });
+
+    let payoutData: IBatchItem[] = [];
+
+    for (const course of courses) {
+      const instructor = await User.findById(course.creatorId);
+      const amount = course.price * 0.6;
+
+      payoutData.push({
+        email: instructor?.email as string,
+        amount,
+      });
+    }
+
+    this.processPayout(payoutData);
+
     return {
       status: 200,
       message: "Update order status successfully",
@@ -227,6 +250,44 @@ export default class PaymentService {
     } catch (error: any) {
       console.log(error.message);
     }
+  };
+
+  static processPayout = async (data: IBatchItem[]) => {
+    const batchs = data.map((item) => {
+      return {
+        recipient_type: "EMAIL",
+        amount: {
+          value: item.amount.toFixed(2),
+          currency: "USD",
+        },
+        receiver: item.email,
+        note: "Thanks for your patronage!",
+        sender_item_id: uuidv4(),
+      };
+    });
+
+    const create_payout_json = {
+      sender_batch_header: {
+        sender_batch_id: `Payouts_${uuidv4()}`,
+        email_subject: "You have a payout!",
+        email_message:
+          "You have received a payout! Thanks for using our service!",
+      },
+      items: batchs,
+    };
+
+    paypal.payout.create(
+      create_payout_json,
+      function (error: any, payout: any) {
+        if (error) {
+          console.log(error.response);
+          throw error;
+        } else {
+          console.log("Create Single Payout Response");
+          console.log(payout);
+        }
+      }
+    );
   };
 
   static processTransaction = async (
