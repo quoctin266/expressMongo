@@ -36,11 +36,12 @@ export default class PaymentController {
   }
 
   static async confirmOrder(req: Request, res: Response) {
-    const { orderId, totalPrice } = req.body;
+    const { orderId, totalPrice, paymentMethod } = req.body;
 
     let result = await PaymentService.confirmOrder(
       orderId as string,
-      +totalPrice as number
+      +totalPrice as number,
+      paymentMethod as string
     );
 
     res.status(result.status).json(result);

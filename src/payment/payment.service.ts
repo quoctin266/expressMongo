@@ -145,21 +145,21 @@ export default class PaymentService {
 
     await this.sendMail(id);
 
-    const courses = await Course.find({ _id: { $in: res?.courseId } });
+    // const courses = await Course.find({ _id: { $in: res?.courseId } });
 
-    let payoutData: IBatchItem[] = [];
+    // let payoutData: IBatchItem[] = [];
 
-    for (const course of courses) {
-      const instructor = await User.findById(course.creatorId);
-      const amount = course.price * 0.6;
+    // for (const course of courses) {
+    //   const instructor = await User.findById(course.creatorId);
+    //   const amount = course.price * 0.6;
 
-      payoutData.push({
-        email: instructor?.email as string,
-        amount,
-      });
-    }
+    //   payoutData.push({
+    //     email: instructor?.email as string,
+    //     amount,
+    //   });
+    // }
 
-    this.processPayout(payoutData);
+    // this.processPayout(payoutData);
 
     return {
       status: 200,
@@ -168,11 +168,19 @@ export default class PaymentService {
     };
   };
 
-  static confirmOrder = async (orderId: string, totalPrice: Number) => {
+  static confirmOrder = async (
+    orderId: string,
+    totalPrice: Number,
+    paymentMethod: string
+  ) => {
     const backendDomain =
       process.env.NODE_ENV === "development"
         ? process.env.BACKEND_DOMAIN_DEVELOPMENT
         : process.env.BACKEND_DOMAIN_PRODUCTION;
+
+    if (paymentMethod !== "paypal") {
+      await Order.findByIdAndUpdate(orderId, { paymentMethod });
+    }
 
     return {
       status: 200,
@@ -194,61 +202,67 @@ export default class PaymentService {
     }>("courseId");
     let items: IItem[] = [];
 
-    if (order) {
-      items = order?.courseId.map((course, index) => {
-        return {
-          name: course.title,
-          price: course.price.toFixed(2),
-          currency: "USD",
-          sku: `00${index + 1}`,
-          quantity: 1,
-        };
-      });
-    }
+    if (order?.paymentMethod === "Paypal") {
+      if (order) {
+        items = order?.courseId.map((course, index) => {
+          return {
+            name: course.title,
+            price: course.price.toFixed(2),
+            currency: "USD",
+            sku: `00${index + 1}`,
+            quantity: 1,
+          };
+        });
+      }
 
-    try {
-      const create_payment_json = {
-        intent: "sale",
-        payer: {
-          payment_method: "paypal",
-        },
-        redirect_urls: {
-          return_url: mobile
-            ? `${frontendDomain}?status=true&orderId=${orderId}`
-            : `${frontendDomain}/payment/invoice?orderId=${orderId}`,
-          cancel_url: mobile
-            ? `${frontendDomain}?status=false&orderId=${orderId}`
-            : `${frontendDomain}/payment-cancel`,
-        },
-        transactions: [
-          {
-            item_list: {
-              items: items,
-            },
-            amount: {
-              currency: "USD",
-              total: totalPrice.toFixed(2),
-            },
-            description: "Cursus courses",
+      try {
+        const create_payment_json = {
+          intent: "sale",
+          payer: {
+            payment_method: "paypal",
           },
-        ],
-      };
+          redirect_urls: {
+            return_url: mobile
+              ? `${frontendDomain}?status=true&orderId=${orderId}`
+              : `${frontendDomain}/payment/invoice?orderId=${orderId}`,
+            cancel_url: mobile
+              ? `${frontendDomain}?status=false&orderId=${orderId}`
+              : `${frontendDomain}/payment-cancel`,
+          },
+          transactions: [
+            {
+              item_list: {
+                items: items,
+              },
+              amount: {
+                currency: "USD",
+                total: totalPrice.toFixed(2),
+              },
+              description: "Cursus courses",
+            },
+          ],
+        };
 
-      paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-          throw error;
-        } else {
-          if (payment.links) {
-            for (let i = 0; i < payment.links?.length; i++) {
-              if (payment.links[i].rel === "approval_url") {
-                res.redirect(payment.links[i].href);
+        paypal.payment.create(create_payment_json, function (error, payment) {
+          if (error) {
+            throw error;
+          } else {
+            if (payment.links) {
+              for (let i = 0; i < payment.links?.length; i++) {
+                if (payment.links[i].rel === "approval_url") {
+                  res.redirect(payment.links[i].href);
+                }
               }
             }
           }
-        }
-      });
-    } catch (error: any) {
-      console.log(error.message);
+        });
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    }
+
+    if (order?.paymentMethod === "payos") {
+      // handle pay os flow
     }
   };
 
