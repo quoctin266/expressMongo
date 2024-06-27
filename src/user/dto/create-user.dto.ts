@@ -22,4 +22,6 @@ export class CreateUserDto {
   description: String;
 
   biography: String;
+
+  paypalAccount: String;
 }

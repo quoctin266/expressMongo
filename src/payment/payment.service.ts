@@ -151,10 +151,10 @@ export default class PaymentService {
 
     // for (const course of courses) {
     //   const instructor = await User.findById(course.creatorId);
-    //   const amount = course.price * 0.6;
+    //   const amount = course.price * 0.7;
 
     //   payoutData.push({
-    //     email: instructor?.email as string,
+    //     email: instructor?.paypalAccount as string,
     //     amount,
     //   });
     // }
@@ -307,8 +307,11 @@ export default class PaymentService {
   static processTransaction = async (
     payerId: string,
     paymentId: string,
-    price: number
+    price: number,
+    orderId: string
   ) => {
+    let order = await Order.findById(orderId);
+
     try {
       const execute_payment_json = {
         payer_id: payerId,
@@ -334,6 +337,22 @@ export default class PaymentService {
           }
         }
       );
+
+      const courses = await Course.find({ _id: { $in: order?.courseId } });
+
+      let payoutData: IBatchItem[] = [];
+
+      for (const course of courses) {
+        const instructor = await User.findById(course.creatorId);
+        const amount = course.price * 0.7;
+
+        payoutData.push({
+          email: instructor?.paypalAccount as string,
+          amount,
+        });
+      }
+
+      this.processPayout(payoutData);
 
       return {
         status: 200,

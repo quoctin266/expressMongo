@@ -110,8 +110,9 @@ export default class InstructorRequestService {
     let userId = (await InstructorRequest.findById(requestId))?.userId;
 
     // approve or reject request
-    if (status === "approved")
+    if (status === "approved") {
       await User.findByIdAndUpdate(userId, { role: 2 });
+    }
 
     let res = await InstructorRequest.findByIdAndUpdate(requestId, {
       status: 0,

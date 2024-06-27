@@ -102,6 +102,7 @@ export default class AuthService {
     const description = user?.description;
     const biography = user?.biography;
     const isVerified = user?.isVerified;
+    const paypalAccount = user?.paypalAccount;
 
     if (mobile && !user?.isVerified) {
       await this.sendMailOtpMobile(email);
@@ -119,6 +120,7 @@ export default class AuthService {
           description,
           biography,
           isVerified,
+          paypalAccount,
         },
       },
     };
@@ -193,6 +195,7 @@ export default class AuthService {
     const description = currentUser?.description;
     const biography = currentUser?.biography;
     const isVerified = currentUser?.isVerified;
+    const paypalAccount = user?.paypalAccount;
 
     return {
       status: 200,
@@ -206,6 +209,7 @@ export default class AuthService {
           description,
           biography,
           isVerified,
+          paypalAccount,
         },
       },
     };
@@ -253,6 +257,7 @@ export default class AuthService {
     const imageUrl = (await User.findById(payload.id))?.image?.url;
     const description = (await User.findById(payload.id))?.description;
     const biography = (await User.findById(payload.id))?.biography;
+    const paypalAccount = (await User.findById(payload.id))?.paypalAccount;
 
     return {
       status: 200,
@@ -260,7 +265,13 @@ export default class AuthService {
       data: {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        userCredentials: { ...payload, imageUrl, description, biography },
+        userCredentials: {
+          ...payload,
+          imageUrl,
+          description,
+          biography,
+          paypalAccount,
+        },
       },
     };
   };

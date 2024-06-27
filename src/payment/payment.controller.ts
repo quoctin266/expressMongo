@@ -59,12 +59,13 @@ export default class PaymentController {
   }
 
   static async processTransaction(req: Request, res: Response) {
-    const { payerId, paymentId, price } = req.query as any;
+    const { payerId, paymentId, price, orderId } = req.query as any;
 
     await PaymentService.processTransaction(
       payerId as string,
       paymentId as string,
-      +price as number
+      +price as number,
+      orderId as string
     );
   }
 

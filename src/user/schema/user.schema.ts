@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
     cart: [{ type: Schema.Types.ObjectId, ref: "course" }],
     purchasedCourses: [{ type: Schema.Types.ObjectId, ref: "course" }],
     googleAuth: { type: Boolean, default: false },
+    paypalAccount: String,
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },
