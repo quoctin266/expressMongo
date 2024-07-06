@@ -14,6 +14,7 @@ export default class SocketConfig {
     this.io = new Server(httpServer, {
       cors: {
         origin: frontendDomain,
+        credentials: true,
       },
     });
 
