@@ -6,6 +6,8 @@ import errorHandler from "./src/custom/ErrorHandler";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import { createServer } from "http";
+import SocketConfig from "./src/util/socket.config";
 
 //For env File
 dotenv.config();
@@ -40,6 +42,10 @@ app.use(
   })
 );
 
+//config sockets
+const httpServer = createServer(app);
+SocketConfig.initializeSocket(httpServer);
+
 //config view engine
 app.set("views", "./src/views");
 app.set("view engine", "ejs");
@@ -59,7 +65,7 @@ app.use(errorHandler);
 (async () => {
   try {
     await getConnection();
-    app.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log(`Server listening on port ${port}`);
     });
   } catch (error) {

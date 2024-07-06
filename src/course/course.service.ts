@@ -11,6 +11,7 @@ import { UploadedFile } from "express-fileupload";
 import { Types } from "mongoose";
 import Order from "../payment/schema/order.schema";
 import CourseRequest from "../courseRequest/schema/courseRequest.schema";
+import SocketConfig from "../util/socket.config";
 
 export default class CourseService {
   static createNewCourse = async (
@@ -91,6 +92,8 @@ export default class CourseService {
       };
       await CourseRequest.create(requestCourse);
     }
+
+    SocketConfig.emitUpdatedCourse(updateCourseDto);
 
     return {
       status: 200,

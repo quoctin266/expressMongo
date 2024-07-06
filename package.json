@@ -37,6 +37,7 @@
     "nodemon": "^3.0.2",
     "paypal-rest-sdk": "^1.8.1",
     "rimraf": "^5.0.5",
+    "socket.io": "^4.7.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
