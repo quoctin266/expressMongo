@@ -14,4 +14,6 @@ export interface IMobileFile {
 
 export class UpdateUserDto extends CreateUserDto {
   file: IMobileFile;
+
+  expoPushToken?: String;
 }

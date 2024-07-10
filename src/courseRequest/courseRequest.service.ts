@@ -10,6 +10,7 @@ import VideoService from "../video/video.service";
 import { CreateCourseRequestDto } from "./dto/create-course-request.dto";
 import { FilterCourseRequestDto } from "./dto/filter-request.dto";
 import CourseRequest from "./schema/courseRequest.schema";
+import { pushToken } from "../util/expoToken.config";
 
 export default class CourseRequestService {
   static create = async (createCourseRequestDto: CreateCourseRequestDto) => {
@@ -146,14 +147,31 @@ export default class CourseRequestService {
 
   static updateStatus = async (requestId: string, status: string) => {
     let courseId = (await CourseRequest.findById(requestId))?.courseId;
+    let course = await Course.findById(courseId);
 
     // approve or reject course
     await Course.findByIdAndUpdate(courseId, { status });
 
-    let res = await CourseRequest.findByIdAndUpdate(requestId, {
-      status: 0,
-      result: status,
-    });
+    let res = await CourseRequest.findByIdAndUpdate(
+      requestId,
+      {
+        status: 0,
+        result: status,
+      },
+      { new: true }
+    );
+
+    if (res?.result === "approved") {
+      let users = await User.find({ purchasedCourses: courseId });
+      let dataTokens = users.map((user) => {
+        return {
+          token: user.expoPushToken as string,
+          data: course?.title as string,
+        };
+      });
+
+      pushToken(dataTokens);
+    }
 
     return {
       status: 200,

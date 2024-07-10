@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
     purchasedCourses: [{ type: Schema.Types.ObjectId, ref: "course" }],
     googleAuth: { type: Boolean, default: false },
     paypalAccount: String,
+    expoPushToken: String,
     createdAt: { type: Date, select: false },
     updatedAt: { type: Date, select: false },
   },
